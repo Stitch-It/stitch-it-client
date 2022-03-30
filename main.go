@@ -8,7 +8,7 @@ import (
 
 	"github.com/caarlos0/env/v6"
 	"github.com/dghubble/go-twitter/twitter"
-	"github.com/dghubble/oath1"
+	"github.com/dghubble/oauth1"
 )
 
 func main() {
@@ -19,9 +19,9 @@ func main() {
 	}
 
 	// Configure a new httpClient to pass to twitter.NewClient()
-	conf := oath1.NewConfig(*cfg.ConsumerKey, *cfg.ConsumerSecret)
-	token := oath1.NewToken(*cfg.AccessToken, *cfg.AccessSecret)
-	httpClient := conf.Client(oath1.NoContext, token)
+	conf := oauth1.NewConfig(cfg.ConsumerKey, cfg.ConsumerSecret)
+	token := oauth1.NewToken(cfg.AccessToken, cfg.AccessSecret)
+	httpClient := conf.Client(oauth1.NoContext, token)
 
 	// Create new Twitter client
 	client := twitter.NewClient(httpClient)
