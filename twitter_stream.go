@@ -16,7 +16,15 @@ func listenToStream(client *twitter.Client) {
 	demux := twitter.NewSwitchDemux()
 
 	demux.Tweet = func(tweet *twitter.Tweet) {
-		downloadImage(fmt.Sprint(tweet.Entities.Media[0].MediaURLHttps), tweet.User.Name)
+		fileName, err := downloadImage(fmt.Sprint(tweet.Entities.Media[0].MediaURLHttps), tweet.User.Name)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+
+		err = processImage(fileName)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
 	}
 
 	// Filter stream
