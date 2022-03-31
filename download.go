@@ -5,9 +5,14 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
+
+	"github.com/google/uuid"
 )
 
-func downloadImage(URL string) error {
+func downloadImage(URL string, user string) error {
+	filename := createFileName(URL, user)
+
 	res, err := http.Get(URL)
 	if err != nil {
 		return err
@@ -24,7 +29,7 @@ func downloadImage(URL string) error {
 		return err
 	}
 
-	file, err := os.Create("testfile.jpeg")
+	file, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
@@ -41,4 +46,18 @@ func downloadImage(URL string) error {
 	}
 
 	return nil
+}
+
+func createFileName(URL string, user string) string {
+	uniqueId := uuid.New()
+
+	uu := strings.Replace(uniqueId.String(), "-", "", -1)
+
+	uniqueUser := uu + user
+
+	splits := strings.Split(URL, ".")
+
+	fileExt := "." + splits[len(splits)-1]
+
+	return uniqueUser + fileExt
 }
