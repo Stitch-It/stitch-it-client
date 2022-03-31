@@ -24,6 +24,13 @@ func downloadImage(URL string, user string) (string, error) {
 		return "", errors.New("received non 200 response code")
 	}
 
+	if _, err := os.Stat("./images/"); os.IsNotExist(err) {
+		err = os.Mkdir("images", 0755)
+		if err != nil {
+			return "", err
+		}
+	}
+
 	err = os.Chdir("images")
 	if err != nil {
 		return "", err
