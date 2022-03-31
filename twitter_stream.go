@@ -21,7 +21,7 @@ func listenToStream(client *twitter.Client) {
 			fmt.Printf("%v\n", err)
 		}
 
-		err = processImage(fileName)
+		err = processImage(fileName, tweet.Text)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
