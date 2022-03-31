@@ -40,6 +40,12 @@ func main() {
 		// processing picture and replying with
 		// pattern will be handled here
 		println(tweet.Text)
+		println(fmt.Sprintf("@%s", tweet.User.ScreenName))
+		// the line below downloads the image
+		// will be replaced with
+		// tweet.Entities.Media[0].MediaURLHttps
+		// to save image from tweet
+		// downloadImage("https://github.com/syke99/go-c2dmc/blob/main/img/Screenshot%202021-12-04%20101419.png?raw=true")
 	}
 
 	// Filter stream
