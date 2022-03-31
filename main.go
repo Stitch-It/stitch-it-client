@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,8 +14,8 @@ import (
 
 func main() {
 	// Parse env variables for Twitter API keys
-	cfg := Config{}
-	if err := env.Parse(&cfg); err != nil {
+	cfg := &Config{}
+	if err := env.Parse(cfg); err != nil {
 		fmt.Printf("%v", err)
 	}
 
@@ -26,29 +27,38 @@ func main() {
 	// Create new Twitter client
 	client := twitter.NewClient(httpClient)
 
+	user, _, err := client.Accounts.VerifyCredentials(&twitter.AccountVerifyParams{})
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+	fmt.Printf("Account @%s (%s)\n", user.ScreenName, user.Name)
+
 	// Convenience demultiplexer to type switch messages
 	demux := twitter.NewSwitchDemux()
 
 	demux.Tweet = func(tweet *twitter.Tweet) {
+		// processing picture and replying with
+		// pattern will be handled here
 		println(tweet.Text)
 	}
 
 	// Filter stream
 	filterParams := &twitter.StreamFilterParams{
-		Track:         []string{"@stitch-it"}, // follow tweets mentioning this user
-		StallWarnings: twitter.Bool(true),     // include a Stall Warning
+		Track:         []string{"@ArtStitchit"}, // follow tweets mentioning this user
+		StallWarnings: twitter.Bool(true),       // include a Stall Warning
 	}
 
 	stream, err := client.Streams.Filter(filterParams)
 	if err != nil {
-		fmt.Printf("%v", err)
+		fmt.Printf("%v\n", err)
 	}
 
 	go demux.HandleChan(stream.Messages)
 
 	// Wait gor SIGINT and SIGTERM (Hitting CTRL-C)
-	ch := make(chan os.Signal)
+	ch := make(chan os.Signal, 2)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+	log.Println(<-ch)
 
 	stream.Stop()
 }
