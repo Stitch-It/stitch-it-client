@@ -28,6 +28,9 @@ func main() {
 		http: httpClient,
 	}
 
+	// Add Filters to Stream
+	addFilters(client)
+
 	// Begin listening to stream with httpClient
 	listenToStream(client)
 }

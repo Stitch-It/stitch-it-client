@@ -17,7 +17,31 @@ type FilterRules struct {
 }
 
 func listenToStream(client Client) {
+	req, err := http.NewRequest(http.MethodGet, "https://api.twitter.com/2/tweets/search/stream", nil)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
+	bearer := fmt.Sprintf("Bearer %s", client.conf.BearerToken)
+	req.Header.Set("Authorization", bearer)
 
+	resp, err := client.http.Do(req)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
+
+	// This will be changed. This is where each
+	// individual Tweet will be read
+	for {
+		bytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+
+		fmt.Println(string(bytes))
+	}
+}
+
+func addFilters(client Client) {
 	f := Filter{
 		Value: "@:stitchit has:media",
 	}
@@ -35,17 +59,19 @@ func listenToStream(client Client) {
 	}
 
 	// Add URL for making request to begin listening to stream
-	req, err := http.NewRequest(http.MethodPost, "", &buf)
+	req, err := http.NewRequest(http.MethodPost, "https://api.twitter.com/2/tweets/search/stream/rules", &buf)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
+	bearer := fmt.Sprintf("Bearer %s", client.conf.BearerToken)
+	req.Header.Set("Content-type", "application/json")
+	req.Header.Set("Authorization", bearer)
 
 	resp, err := client.http.Do(req)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
 
-	// Change this to for loop consuming string
 	bytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("%v\n", err)
