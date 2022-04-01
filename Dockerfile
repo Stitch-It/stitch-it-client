@@ -17,7 +17,7 @@ ENV ACCESS_SECRET=$ACCESS_SECRET
 
 WORKDIR /go/src/twitter-bot
 COPY . .
-RUN cp twitter-upload.exe /usr/local/bin
+RUN cp twitter-upload /usr/local/bin
 ENV GO111MODULE=on
 RUN go build .
 CMD [ "./twitter-bot-test" ]
