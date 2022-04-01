@@ -1,51 +1,55 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
-
-	"github.com/dghubble/go-twitter/twitter"
+	"io"
+	"net/http"
 )
 
-func listenToStream(client *twitter.Client) {
+type Filter struct {
+	Value string `json:"value"`
+}
 
-	// Convenience demultiplexer to type switch messages
-	demux := twitter.NewSwitchDemux()
+type FilterRules struct {
+	Add []Filter `json:"add"`
+}
 
-	demux.Tweet = func(tweet *twitter.Tweet) {
-		// fileName, err := downloadImage(fmt.Sprint(tweet.Entities.Media[0].MediaURLHttps), tweet.User.Name)
-		// if err != nil {
-		// 	fmt.Printf("%v\n", err)
-		// }
+func listenToStream(client Client) {
 
-		// err = processImage(fileName, tweet.Text)
-		// if err != nil {
-		// 	fmt.Printf("%v\n", err)
-		// }
-
-		reply(client, tweet.ID, tweet.User.ScreenName)
+	f := Filter{
+		Value: "@:stitchit has:media",
 	}
 
-	// Filter stream
-	filterParams := &twitter.StreamFilterParams{
-		Track:         []string{"@StitchItArt"}, // follow tweets mentioning this user
-		StallWarnings: twitter.Bool(true),       // include a Stall Warning
+	filters := []Filter{f}
+
+	rules := FilterRules{
+		Add: filters,
 	}
 
-	stream, err := client.Streams.Filter(filterParams)
+	var buf bytes.Buffer
+	err := json.NewEncoder(&buf).Encode(rules)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
 
-	go demux.HandleChan(stream.Messages)
+	// Add URL for making request to begin listening to stream
+	req, err := http.NewRequest(http.MethodPost, "", &buf)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
 
-	// Wait gor SIGINT and SIGTERM (Hitting CTRL-C)
-	ch := make(chan os.Signal, 2)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	log.Println(<-ch)
+	resp, err := client.http.Do(req)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
 
-	stream.Stop()
+	// Change this to for loop consuming string
+	bytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
+
+	fmt.Println(string(bytes))
 }
