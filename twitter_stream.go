@@ -23,13 +23,11 @@ func listenToStream(client Client) {
 	}
 
 	reader := bufio.NewReader(resp.Body)
-	// This will be changed. This is where each
-	// individual Tweet will be handled
 	for {
 		bytes, _ := reader.ReadBytes('\n')
 
 		// This check handles sporadic empty messages
-		if len(bytes) > 0 {
+		if len(bytes) >= 0 {
 			tweet := Tweet{
 				Error: false,
 			}
@@ -42,14 +40,23 @@ func listenToStream(client Client) {
 					case <-done:
 						return
 					default:
+						// Check for empty tweet.MediaUrl to
+						// prevent crash from panic in processing
+						// images
+						if tweet.MediaUrl == "" {
+							return
+						}
+
 						// Download Image
 						fileName, err := downloadImage(tweet.MediaUrl, tweet.AuthorName)
 						if err != nil {
 							fmt.Printf("%v\n", err)
 						}
 
+						// println(fileName)
+
 						// Resize the image
-						err = processImage(fileName, tweet.Text)
+						resizeImage(fileName, tweet.Text)
 						if err != nil {
 							fmt.Printf("%v\n", err)
 						}

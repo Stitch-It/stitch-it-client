@@ -60,7 +60,7 @@ func createFileName(URL string, user string) string {
 
 	uu := strings.Replace(uniqueId.String(), "-", "", -1)
 
-	uniqueUser := uu + user
+	uniqueUser := uu + "@" + user
 
 	splits := strings.Split(URL, ".")
 

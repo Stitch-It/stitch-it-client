@@ -12,15 +12,15 @@ import (
 	"golang.org/x/image/draw"
 )
 
-func processImage(fileName string, size string) error {
-	file, err := os.Open(fmt.Sprintf("images/%s", fileName))
+func resizeImage(fileName string, size string) error {
+	file, err := os.Open(fmt.Sprintf("./images/%s", fileName))
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	width := strings.Split(size, "x")[0]
+	width := strings.Split(strings.ToLower(size), "x")[0]
 	w, _ := strconv.Atoi(width)
-	height := strings.Split(size, "x")[1]
+	height := strings.Split(strings.ToLower(size), "x")[1]
 	h, _ := strconv.Atoi(height)
 
 	defer file.Close()
@@ -28,6 +28,11 @@ func processImage(fileName string, size string) error {
 	switch strings.Split(fileName, ".")[1] {
 	case "jpeg", "jpg":
 		{
+			err := os.Chdir("images")
+			if err != nil {
+				fmt.Printf("err: %v\n", err)
+			}
+
 			output, err := os.Create("processed_" + fileName)
 			if err != nil {
 				fmt.Printf("err: %v\n", err)
@@ -40,9 +45,21 @@ func processImage(fileName string, size string) error {
 			draw.ApproxBiLinear.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
 
 			jpeg.Encode(output, dst, nil)
+
+			err = os.Chdir("..")
+			if err != nil {
+				fmt.Printf("err: %v\n", err)
+			}
+
+			println("image processed successfully")
 		}
 	case "png":
 		{
+			err := os.Chdir("images")
+			if err != nil {
+				fmt.Printf("err: %v\n", err)
+			}
+
 			output, err := os.Create("processed_" + fileName)
 			if err != nil {
 				fmt.Printf("err: %v\n", err)
@@ -55,6 +72,13 @@ func processImage(fileName string, size string) error {
 			draw.BiLinear.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
 
 			png.Encode(output, dst)
+
+			err = os.Chdir("..")
+			if err != nil {
+				fmt.Printf("err: %v\n", err)
+			}
+
+			println("image processed successfully")
 		}
 	}
 
