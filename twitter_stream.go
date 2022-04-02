@@ -9,17 +9,9 @@ import (
 	"net/http"
 )
 
-type Filter struct {
-	Value string `json:"value"`
-}
-
-type FilterRules struct {
-	Add []Filter `json:"add"`
-}
-
 func listenToStream(client Client) {
 	// https://api.twitter.com/2/tweets/search/stream&tweet.fields=text,attachments,source&expansions=author_id,attachments.media_key&media.fields=media_key,url
-	req, err := http.NewRequest(http.MethodGet, "https://api.twitter.com/2/tweets/search/stream?tweet.fields=text,attachments,source&expansions=author_id,attachments.media_keys&media.fields=media_key,url", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://api.twitter.com/2/tweets/search/stream?tweet.fields=text,attachments,source&expansions=author_id,attachments.media_keys&media.fields=url", nil)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
@@ -38,7 +30,10 @@ func listenToStream(client Client) {
 		bytes, _ := reader.ReadBytes('\n')
 
 		if len(bytes) > 0 {
-			println(string(bytes))
+			tweet := Tweet{
+				Error: false,
+			}
+			extractValues(bytes, tweet)
 		}
 	}
 }
