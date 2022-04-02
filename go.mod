@@ -1,4 +1,4 @@
-module github.com/syke99/twitter-bot-test
+module github.com/syke99/stitch-it
 
 go 1.16
 

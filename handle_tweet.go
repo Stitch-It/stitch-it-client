@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/syke99/stitch-it/generate"
+)
 
 func handleTweet(bytes []byte) {
 	// This check handles sporadic empty messages
@@ -43,7 +47,7 @@ func createGoRoutineForTweet(tweet Tweet) {
 
 				// Generate Pattern
 				processedFileName := "@" + fileName
-				generatePattern(processedFileName)
+				generate.GeneratePattern(processedFileName)
 
 				// Reply with Pattern
 
