@@ -42,6 +42,8 @@ func createGoRoutineForTweet(tweet Tweet) {
 				}
 
 				// Generate Pattern
+				processedFileName := "@" + fileName
+				generatePattern(processedFileName)
 
 				// Reply with Pattern
 
