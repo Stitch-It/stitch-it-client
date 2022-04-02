@@ -45,11 +45,11 @@ func extractDataSection(str string, tweet Tweet) Tweet {
 
 	tmp := strs[7][13:]
 
-	s := strings.Split(tmp, " https://")[0]
+	size := strings.Split(tmp, " https://")[0]
 
 	tweet.AuthorId = strs[1]
 	tweet.Id = strs[3]
-	tweet.Text = s
+	tweet.Text = size
 
 	return tweet
 
