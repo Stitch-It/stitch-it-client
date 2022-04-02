@@ -43,11 +43,17 @@ func createGoRoutineForTweet(tweet Tweet) {
 					fmt.Printf("%v\n", err)
 				}
 
-				// Generate Pattern
-				processedFileName := "@" + fileName
-				generatePattern(processedFileName, tweet.Text)
+				// Instead of generating the excel file
+				// here, we'll send the resized image
+				// to the Stitch-It file server here,
+				// store it there, and dynamically create
+				// the pattern when a user makes a GET request
+				// to download the pattern
+				//
+				// sendProcessedImageToServer()
 
-				// Reply with Pattern
+				// Reply to tweet with URL to download
+				// Excel pattern
 
 				// Signal done
 				done <- true
