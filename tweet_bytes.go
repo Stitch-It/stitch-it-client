@@ -13,14 +13,22 @@ func extractValues(bytes []byte, tweet Tweet) Tweet {
 
 	strs := strings.Split(s2, "\n")
 
+	// Prevents processing Tweets without enough
+	// data to populate tweet
 	if len(strs) < 8 {
 		tweet.Error = true
 		return tweet
 	}
 
 	tweet = extractDataSection(strs[1], tweet)
-	tweet = extractMediaUrl(strs[2], tweet)
-	tweet = extractUsers(strs[3], tweet)
+
+	if !tweet.Error {
+		tweet = extractMediaUrl(strs[2], tweet)
+	}
+
+	if !tweet.Error {
+		tweet = extractUsers(strs[3], tweet)
+	}
 
 	return tweet
 }
@@ -28,6 +36,8 @@ func extractValues(bytes []byte, tweet Tweet) Tweet {
 func extractDataSection(str string, tweet Tweet) Tweet {
 	strs := formatEscapedCharacters(str)
 
+	// Prevents processing Tweets without enough
+	// data to populate tweet
 	if len(strs) < 7 {
 		tweet.Error = true
 		return tweet
@@ -48,6 +58,8 @@ func extractDataSection(str string, tweet Tweet) Tweet {
 func extractMediaUrl(str string, tweet Tweet) Tweet {
 	strs := formatEscapedCharacters(str)
 
+	// Prevents processing Tweets without enough
+	// data to populate tweet
 	if len(strs) < 6 {
 		tweet.Error = true
 		return tweet
@@ -61,6 +73,8 @@ func extractMediaUrl(str string, tweet Tweet) Tweet {
 func extractUsers(str string, tweet Tweet) Tweet {
 	strs := formatEscapedCharacters(str)
 
+	// Prevents processing Tweets without enough
+	// data to populate tweet
 	if len(strs) < 7 {
 		tweet.Error = true
 		return tweet

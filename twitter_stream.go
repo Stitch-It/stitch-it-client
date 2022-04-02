@@ -10,7 +10,6 @@ import (
 )
 
 func listenToStream(client Client) {
-	// https://api.twitter.com/2/tweets/search/stream&tweet.fields=text,attachments,source&expansions=author_id,attachments.media_key&media.fields=media_key,url
 	req, err := http.NewRequest(http.MethodGet, "https://api.twitter.com/2/tweets/search/stream?tweet.fields=text,attachments,source&expansions=author_id,attachments.media_keys&media.fields=url", nil)
 	if err != nil {
 		fmt.Printf("%v\n", err)
@@ -29,6 +28,7 @@ func listenToStream(client Client) {
 	for {
 		bytes, _ := reader.ReadBytes('\n')
 
+		// This check handles sporadic empty messages
 		if len(bytes) > 0 {
 			tweet := Tweet{
 				Error: false,
