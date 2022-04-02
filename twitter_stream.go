@@ -33,7 +33,36 @@ func listenToStream(client Client) {
 			tweet := Tweet{
 				Error: false,
 			}
-			extractValues(bytes, tweet)
+			tweet = extractValues(bytes, tweet)
+
+			done := make(chan bool)
+			go func(done chan bool, tweet Tweet) {
+				for {
+					select {
+					case <-done:
+						return
+					default:
+						// Download Image
+						fileName, err := downloadImage(tweet.MediaUrl, tweet.AuthorName)
+						if err != nil {
+							fmt.Printf("%v\n", err)
+						}
+
+						// Resize the image
+						err = processImage(fileName, tweet.Text)
+						if err != nil {
+							fmt.Printf("%v\n", err)
+						}
+
+						// Generate Pattern
+
+						// Reply with Pattern
+
+						// Signal done
+						done <- true
+					}
+				}
+			}(done, tweet)
 		}
 	}
 }
