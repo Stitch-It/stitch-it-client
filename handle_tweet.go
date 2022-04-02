@@ -35,8 +35,6 @@ func createGoRoutineForTweet(tweet Tweet) {
 					fmt.Printf("%v\n", err)
 				}
 
-				// println(fileName)
-
 				// Resize the image
 				resizeImage(fileName, tweet.Text)
 				if err != nil {
