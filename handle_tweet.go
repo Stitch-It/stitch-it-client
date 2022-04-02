@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/syke99/stitch-it/generate"
 )
 
 func handleTweet(bytes []byte) {
@@ -47,7 +45,7 @@ func createGoRoutineForTweet(tweet Tweet) {
 
 				// Generate Pattern
 				processedFileName := "@" + fileName
-				generate.GeneratePattern(processedFileName)
+				generatePattern(processedFileName, tweet.Text)
 
 				// Reply with Pattern
 
