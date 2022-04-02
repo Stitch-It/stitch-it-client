@@ -13,4 +13,4 @@ WORKDIR /go/src/twitter-bot
 COPY . .
 ENV GO111MODULE=on
 RUN go build .
-CMD [ "./twitter-bot-test" ]
+CMD [ "./stitch-it" ]

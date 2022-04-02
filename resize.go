@@ -46,6 +46,11 @@ func resizeImage(fileName string, size string) error {
 
 			jpeg.Encode(output, dst, nil)
 
+			err = os.Remove(fileName)
+			if err != nil {
+				fmt.Printf("err: %v\n", err)
+			}
+
 			err = os.Chdir("..")
 			if err != nil {
 				fmt.Printf("err: %v\n", err)
@@ -72,6 +77,18 @@ func resizeImage(fileName string, size string) error {
 			draw.BiLinear.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
 
 			png.Encode(output, dst)
+
+			// path, err := os.Getwd()
+			// if err != nil {
+			// 	fmt.Printf("err: %v\n", err)
+			// }
+			// println(path)
+			// println(fileName)
+
+			err = os.Remove(fileName)
+			if err != nil {
+				fmt.Printf("err: %v\n", err)
+			}
 
 			err = os.Chdir("..")
 			if err != nil {
