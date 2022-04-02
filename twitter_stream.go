@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -17,7 +18,8 @@ type FilterRules struct {
 }
 
 func listenToStream(client Client) {
-	req, err := http.NewRequest(http.MethodGet, "https://api.twitter.com/2/tweets/search/stream", nil)
+	// https://api.twitter.com/2/tweets/search/stream&tweet.fields=text,attachments,source&expansions=author_id,attachments.media_key&media.fields=media_key,url
+	req, err := http.NewRequest(http.MethodGet, "https://api.twitter.com/2/tweets/search/stream?tweet.fields=text,attachments,source&expansions=author_id,attachments.media_keys&media.fields=media_key,url", nil)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
@@ -29,21 +31,21 @@ func listenToStream(client Client) {
 		fmt.Printf("%v\n", err)
 	}
 
+	reader := bufio.NewReader(resp.Body)
 	// This will be changed. This is where each
-	// individual Tweet will be read
+	// individual Tweet will be handled
 	for {
-		bytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("%v\n", err)
-		}
+		bytes, _ := reader.ReadBytes('\n')
 
-		fmt.Println(string(bytes))
+		if len(bytes) > 0 {
+			println(string(bytes))
+		}
 	}
 }
 
 func addFilters(client Client) {
 	f := Filter{
-		Value: "@:stitchit has:media",
+		Value: "@stitchitart has:media",
 	}
 
 	filters := []Filter{f}
