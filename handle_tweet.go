@@ -36,7 +36,7 @@ func createGoRoutineForTweet(tweet Tweet, client Client) {
 				}
 
 				// Resize the image
-				img := resizeImage(fileName, bytes, tweet.Text)
+				resizeImage(fileName, bytes, tweet.Text)
 
 				// Instead of generating the excel file
 				// here, we'll send the resized image
@@ -45,7 +45,7 @@ func createGoRoutineForTweet(tweet Tweet, client Client) {
 				// the pattern when a user makes a GET request
 				// to download the pattern
 				//
-				sendProcessedImageToServer(img, fileName, client)
+				sendProcessedImageToServer(fileName, client)
 
 				// Reply to tweet with URL to download
 				// Excel pattern
