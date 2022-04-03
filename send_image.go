@@ -39,7 +39,7 @@ func createMultiPartFormData(fieldName, fileName string) (bytes.Buffer, *multipa
 	var fw io.Writer
 	file := openFile("./images/" + fileName)
 
-	fw, err = w.CreateFormFile(fieldName, file.Name())
+	fw, err = w.CreateFormFile(fieldName, fileName)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
