@@ -30,13 +30,13 @@ func createGoRoutineForTweet(tweet Tweet) {
 				return
 			default:
 				// Download Image
-				fileName, err := downloadImage(tweet.MediaUrl, tweet.AuthorName)
+				fileName, bytes, err := downloadImage(tweet.MediaUrl, tweet.AuthorName)
 				if err != nil {
 					fmt.Printf("%v\n", err)
 				}
 
 				// Resize the image
-				resizeImage(fileName, tweet.Text)
+				resizeImage(fileName, bytes, tweet.Text)
 				if err != nil {
 					fmt.Printf("%v\n", err)
 				}

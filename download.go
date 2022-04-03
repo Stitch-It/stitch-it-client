@@ -4,55 +4,59 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/google/uuid"
 )
 
-func downloadImage(URL string, user string) (string, error) {
+func downloadImage(URL string, user string) (string, []byte, error) {
 	fileName := createFileName(URL, user)
 
 	res, err := http.Get(URL)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		return "", errors.New("received non 200 response code")
+		return "", nil, errors.New("received non 200 response code")
 	}
 
-	if _, err := os.Stat("./images/"); os.IsNotExist(err) {
-		err = os.Mkdir("images", 0755)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	err = os.Chdir("images")
+	bytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
-	file, err := os.Create(fileName)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
+	// if _, err := os.Stat("./images/"); os.IsNotExist(err) {
+	// 	err = os.Mkdir("images", 0755)
+	// 	if err != nil {
+	// 		return "", err
+	// 	}
+	// }
 
-	_, err = io.Copy(file, res.Body)
-	if err != nil {
-		return "", err
-	}
+	// err = os.Chdir("images")
+	// if err != nil {
+	// 	return "", err
+	// }
 
-	err = os.Chdir("..")
-	if err != nil {
-		return "", err
-	}
+	// file, err := os.Create(fileName)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// defer file.Close()
 
-	return fileName, nil
+	// _, err = io.Copy(file, res.Body)
+	// if err != nil {
+	// 	return "", err
+	// }
+
+	// err = os.Chdir("..")
+	// if err != nil {
+	// 	return "", err
+	// }
+
+	return fileName, bytes, nil
 }
 
 func createFileName(URL string, user string) string {
