@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func handleTweet(bytes []byte) {
+func handleTweet(bytes []byte, client Client) {
 	// This check handles sporadic empty messages
 	if len(bytes) >= 0 {
 		tweet := Tweet{
@@ -16,12 +16,12 @@ func handleTweet(bytes []byte) {
 		// prevent crash from panic in processing
 		// images
 		if tweet.MediaUrl != "" {
-			createGoRoutineForTweet(tweet)
+			createGoRoutineForTweet(tweet, client)
 		}
 	}
 }
 
-func createGoRoutineForTweet(tweet Tweet) {
+func createGoRoutineForTweet(tweet Tweet, client Client) {
 	done := make(chan bool)
 	go func(done chan bool, tweet Tweet) {
 		for {
@@ -36,10 +36,7 @@ func createGoRoutineForTweet(tweet Tweet) {
 				}
 
 				// Resize the image
-				err = resizeImage(fileName, bytes, tweet.Text)
-				if err != nil {
-					fmt.Printf("%v\n", err)
-				}
+				img := resizeImage(fileName, bytes, tweet.Text)
 
 				// Instead of generating the excel file
 				// here, we'll send the resized image
@@ -48,7 +45,7 @@ func createGoRoutineForTweet(tweet Tweet) {
 				// the pattern when a user makes a GET request
 				// to download the pattern
 				//
-				// sendProcessedImageToServer()
+				sendProcessedImageToServer(img, fileName, client)
 
 				// Reply to tweet with URL to download
 				// Excel pattern

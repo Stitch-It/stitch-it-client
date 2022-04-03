@@ -28,34 +28,6 @@ func downloadImage(URL string, user string) (string, []byte, error) {
 		return "", nil, err
 	}
 
-	// if _, err := os.Stat("./images/"); os.IsNotExist(err) {
-	// 	err = os.Mkdir("images", 0755)
-	// 	if err != nil {
-	// 		return "", err
-	// 	}
-	// }
-
-	// err = os.Chdir("images")
-	// if err != nil {
-	// 	return "", err
-	// }
-
-	// file, err := os.Create(fileName)
-	// if err != nil {
-	// 	return "", err
-	// }
-	// defer file.Close()
-
-	// _, err = io.Copy(file, res.Body)
-	// if err != nil {
-	// 	return "", err
-	// }
-
-	// err = os.Chdir("..")
-	// if err != nil {
-	// 	return "", err
-	// }
-
 	return fileName, bytes, nil
 }
 

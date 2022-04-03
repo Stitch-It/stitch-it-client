@@ -13,33 +13,29 @@ import (
 	"golang.org/x/image/draw"
 )
 
-func resizeImage(fileName string, b []byte, size string) error {
+func resizeImage(fileName string, b []byte, size string) []byte {
 	width := strings.Split(strings.ToLower(size), "x")[0]
 	w, _ := strconv.Atoi(width)
 	height := strings.Split(strings.ToLower(size), "x")[1]
 	h, _ := strconv.Atoi(height)
 
-	var err error
+	var img []byte
 
 	switch strings.Split(fileName, ".")[1] {
 	case "jpeg", "jpg":
-		{
-			err = resizeJpeg(fileName, b, w, h)
-		}
+		img = resizeJpeg(fileName, b, w, h)
 	case "png":
-		{
-			err = resizePng(fileName, b, w, h)
-		}
+		img = resizePng(fileName, b, w, h)
 	}
 
-	return err
+	return img
 }
 
-func resizeJpeg(fileName string, b []byte, w int, h int) error {
+func resizeJpeg(fileName string, b []byte, w int, h int) []byte {
 	if _, err := os.Stat("./images/"); os.IsNotExist(err) {
 		err = os.Mkdir("images", 0755)
 		if err != nil {
-			return err
+			fmt.Printf("err: %v\n", err)
 		}
 	}
 
@@ -60,9 +56,11 @@ func resizeJpeg(fileName string, b []byte, w int, h int) error {
 
 	dst := image.NewRGBA(image.Rect(0, 0, w, h))
 
-	draw.ApproxBiLinear.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
+	draw.BiLinear.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
 
 	jpeg.Encode(output, dst, nil)
+
+	data, _ := os.ReadFile(output.Name())
 
 	err = os.Chdir("..")
 	if err != nil {
@@ -71,14 +69,14 @@ func resizeJpeg(fileName string, b []byte, w int, h int) error {
 
 	println("image processed successfully")
 
-	return err
+	return data
 }
 
-func resizePng(fileName string, b []byte, w int, h int) error {
+func resizePng(fileName string, b []byte, w int, h int) []byte {
 	if _, err := os.Stat("./images/"); os.IsNotExist(err) {
 		err = os.Mkdir("images", 0755)
 		if err != nil {
-			return err
+			fmt.Printf("err: %v\n", err)
 		}
 	}
 
@@ -103,6 +101,8 @@ func resizePng(fileName string, b []byte, w int, h int) error {
 
 	png.Encode(output, dst)
 
+	data, _ := os.ReadFile(output.Name())
+
 	err = os.Chdir("..")
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
@@ -110,5 +110,5 @@ func resizePng(fileName string, b []byte, w int, h int) error {
 
 	println("image processed successfully")
 
-	return err
+	return data
 }

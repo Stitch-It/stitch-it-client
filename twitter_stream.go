@@ -26,7 +26,7 @@ func listenToStream(client Client) {
 	for {
 		bytes, _ := reader.ReadBytes('\n')
 
-		handleTweet(bytes)
+		handleTweet(bytes, client)
 	}
 }
 
