@@ -30,21 +30,14 @@ func createGoRoutineForTweet(tweet Tweet, client Client) {
 				return
 			default:
 				// Download Image
-				fileName, bytes, err := downloadImage(tweet.MediaUrl, tweet.AuthorName)
+				fileName, b, err := downloadImage(tweet.MediaUrl, tweet.AuthorName)
 				if err != nil {
 					fmt.Printf("%v\n", err)
 				}
 
 				// Resize the image
-				resizeImage(fileName, bytes, tweet.Text)
+				resizeImage(fileName, b, tweet.Text)
 
-				// Instead of generating the excel file
-				// here, we'll send the resized image
-				// to the Stitch-It file server here,
-				// store it there, and dynamically create
-				// the pattern when a user makes a GET request
-				// to download the pattern
-				//
 				sendProcessedImageToServer(fileName, client)
 
 				// Reply to tweet with URL to download

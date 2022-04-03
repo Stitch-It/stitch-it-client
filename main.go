@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/base64"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 
 	"github.com/caarlos0/env/v6"
 )
@@ -28,9 +32,15 @@ func main() {
 		http: httpClient,
 	}
 
-	// Add Filters to Stream
+	bytesBuffer := bytes.NewBufferString("testing")
+
+	decodedBuffer := base64.NewDecoder(base64.StdEncoding, bytesBuffer)
+
+	io.Copy(os.Stdout, decodedBuffer)
+
+	// // Add Filters to Stream
 	addFilters(client)
 
-	// Begin listening to stream with httpClient
+	// // Begin listening to stream with httpClient
 	listenToStream(client)
 }
