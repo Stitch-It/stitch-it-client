@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 )
 
 func handleTweet(bytes []byte, client Client) {
@@ -42,6 +43,11 @@ func createGoRoutineForTweet(tweet Tweet, client Client) {
 
 				// Reply to tweet with URL to download
 				// Excel pattern
+
+				err = os.Remove("./images/" + fileName)
+				if err != nil {
+					fmt.Printf("%v\n", err)
+				}
 
 				// Signal done
 				done <- true

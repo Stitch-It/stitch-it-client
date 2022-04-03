@@ -35,6 +35,7 @@ func resizeImage(fileName string, b []byte, size string) {
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
+	defer output.Close()
 
 	src, _, err := image.Decode(bytes.NewReader(b))
 	if err != nil {

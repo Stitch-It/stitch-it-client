@@ -41,6 +41,8 @@ func main() {
 	// // Add Filters to Stream
 	addFilters(client)
 
+	// var proc *os.Process
+
 	// // Begin listening to stream with httpClient
 	listenToStream(client)
 }
