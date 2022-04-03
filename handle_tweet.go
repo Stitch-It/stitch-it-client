@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"strconv"
+
+	"github.com/gofrs/flock"
 )
 
 func handleTweet(bytes []byte, client Client) {
@@ -17,17 +19,17 @@ func handleTweet(bytes []byte, client Client) {
 		// prevent crash from panic in processing
 		// images
 		if tweet.MediaUrl != "" {
-			createGoRoutineForTweet(tweet, client)
+			storeImageInServer(tweet, client)
 		}
 	}
 }
 
-func createGoRoutineForTweet(tweet Tweet, client Client) {
-	done := make(chan bool)
-	go func(done chan bool, tweet Tweet) {
+func storeImageInServer(tweet Tweet, client Client) {
+	quit := make(chan bool)
+	go func(quit chan bool, tweet Tweet) {
 		for {
 			select {
-			case <-done:
+			case <-quit:
 				return
 			default:
 				// Download Image
@@ -44,14 +46,13 @@ func createGoRoutineForTweet(tweet Tweet, client Client) {
 				// Reply to tweet with URL to download
 				// Excel pattern
 
-				err = os.Remove("./images/" + fileName)
-				if err != nil {
-					fmt.Printf("%v\n", err)
-				}
+				fileLock := flock.New(fileName)
+
+				println(strconv.FormatBool(fileLock.Locked()))
 
 				// Signal done
-				done <- true
+				quit <- true
 			}
 		}
-	}(done, tweet)
+	}(quit, tweet)
 }
