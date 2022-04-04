@@ -1,5 +1,13 @@
 package main
 
+import "net/http"
+
+type Client struct {
+	conf             *Config
+	http             *http.Client
+	imageUrlAndSizes chan string
+}
+
 type Filter struct {
 	Value string `json:"value"`
 }

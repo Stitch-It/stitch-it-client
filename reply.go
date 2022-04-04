@@ -1,24 +1,17 @@
 package main
 
-import (
-	"fmt"
-	"log"
+// func reply(client *twitter.Client, tweetId int64, userName string) {
 
-	"github.com/dghubble/go-twitter/twitter"
-)
+// 	replyStatus := fmt.Sprintf("@%v Thanks for mentioning!!", userName)
 
-func reply(client *twitter.Client, tweetId int64, userName string) {
+// 	params := &twitter.StatusUpdateParams{
+// 		Status:            replyStatus,
+// 		InReplyToStatusID: tweetId,
+// 	}
 
-	replyStatus := fmt.Sprintf("@%v Thanks for mentioning!!", userName)
+// 	_, _, err := client.Statuses.Update(replyStatus, params)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
 
-	params := &twitter.StatusUpdateParams{
-		Status:            replyStatus,
-		InReplyToStatusID: tweetId,
-	}
-
-	_, _, err := client.Statuses.Update(replyStatus, params)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-}
+// }

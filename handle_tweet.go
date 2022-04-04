@@ -1,9 +1,5 @@
 package main
 
-import (
-	"fmt"
-)
-
 func handleTweet(bytes []byte, client Client) bool {
 	var done bool = false
 
@@ -27,13 +23,18 @@ func handleTweet(bytes []byte, client Client) bool {
 			// 	fmt.Printf("%v\n", err)
 			// }
 
+			urlAndSize := tweet.MediaUrl + "@-@" + tweet.Text
+
 			// tmpFile.Seek(0, 0)
 			// s := bufio.NewScanner(tmpFile)
 			// for s.Scan() {
 			// 	println(s.Text())
 			// }
 
-			storeImageInServer(tweet, client)
+			client.imageUrlAndSizes <- urlAndSize
+			client.imageUrlAndSizes <- ""
+
+			// storeImageInServer(tweet, client)
 
 			done = true
 		}
@@ -42,28 +43,28 @@ func handleTweet(bytes []byte, client Client) bool {
 	return done
 }
 
-func storeImageInServer(tweet Tweet, client Client) {
-	// Download Image
-	fileName, b, err := downloadImage(tweet.MediaUrl, tweet.AuthorName)
-	if err != nil {
-		fmt.Printf("%v\n", err)
-	}
+// func storeImageInServer(tweet Tweet, client Client) {
+// 	// Download Image
+// 	fileName, b, err := downloadImage(tweet.MediaUrl)
+// 	if err != nil {
+// 		fmt.Printf("%v\n", err)
+// 	}
 
-	// I should be able to just create the temp file
-	// and temp file here instead of an actual file?
+// 	// I should be able to just create the temp file
+// 	// and temp file here instead of an actual file?
 
-	// Resize the image
-	resizeImage(fileName, b, tweet.Text)
+// 	// Resize the image
+// 	resizeImage(fileName, b, tweet.Text)
 
-	sendProcessedImageToServer(fileName, client)
+// 	sendProcessedImageToServer(fileName, client)
 
-	// and then hopefully delete the temp file?
+// 	// and then hopefully delete the temp file?
 
-	// Reply to tweet with URL to download
-	// Excel pattern
+// 	// Reply to tweet with URL to download
+// 	// Excel pattern
 
-	// fileLock := flock.New(fileName)
+// 	// fileLock := flock.New(fileName)
 
-	// println(strconv.FormatBool(fileLock.Locked()))
+// 	// println(strconv.FormatBool(fileLock.Locked()))
 
-}
+// }

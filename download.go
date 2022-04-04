@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func downloadImage(URL string, user string) (string, []byte, error) {
-	fileName := createFileName(URL, user)
+func downloadImage(URL string) (string, []byte, error) {
+	fileName := createFileName(URL)
 
 	res, err := http.Get(URL)
 	if err != nil {
@@ -31,16 +31,12 @@ func downloadImage(URL string, user string) (string, []byte, error) {
 	return fileName, bytes, nil
 }
 
-func createFileName(URL string, user string) string {
+func createFileName(URL string) string {
 	uniqueId := uuid.New()
-
-	uu := strings.Replace(uniqueId.String(), "-", "", -1)
-
-	uniqueUser := uu + "@" + user
 
 	splits := strings.Split(URL, ".")
 
 	fileExt := "." + splits[len(splits)-1]
 
-	return uniqueUser + fileExt
+	return uniqueId.String() + fileExt
 }
