@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 
@@ -39,19 +38,28 @@ func main() {
 
 	io.Copy(os.Stdout, decodedBuffer)
 
-	go func() {
-		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			println("hello")
-		})
+	// Run separate server in goroutine so users can
+	// make requests and we can consume the Twitter
+	// API at the same time
+	// go func() {
+	// 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 		println("hello")
+	// 	})
 
-		log.Fatal(http.ListenAndServe(":3030", nil))
-	}()
+	// 	log.Fatal(http.ListenAndServe(":3030", nil))
+	// }()
 
 	// // Add Filters to Stream
 	addFilters(client)
 
-	// var proc *os.Process
+	// var tweetProcessed bool
 
-	// // Begin listening to stream with httpClient
+	// for !tweetProcessed {
+	// 	tweetProcessed = listenToStream(client)
+
+	// 	continue
+	// }
+
+	// Begin listening to stream with httpClient
 	listenToStream(client)
 }

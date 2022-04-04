@@ -7,9 +7,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 )
 
-func listenToStream(client Client) {
+func listenToStream(client Client) bool {
 	req, err := http.NewRequest(http.MethodGet, "https://api.twitter.com/2/tweets/search/stream?tweet.fields=text,attachments,source&expansions=author_id,attachments.media_keys&media.fields=url", nil)
 	if err != nil {
 		fmt.Printf("%v\n", err)
@@ -22,12 +23,27 @@ func listenToStream(client Client) {
 		fmt.Printf("%v\n", err)
 	}
 
-	reader := bufio.NewReader(resp.Body)
-	for {
-		bytes, _ := reader.ReadBytes('\n')
+	defer resp.Body.Close()
 
-		handleTweet(bytes, client)
+	var done bool
+
+	reader := bufio.NewReader(resp.Body)
+	for !done {
+		bts, _ := reader.ReadBytes('\n')
+
+		done = handleTweet(bts, client)
+
+		continue
 	}
+
+	// this would be moved outside of the goroutine
+	// for listening for a tweet
+	err = os.RemoveAll(".\\images")
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
+
+	return done
 }
 
 func addFilters(client Client) {

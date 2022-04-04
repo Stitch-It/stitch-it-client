@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"sync"
 )
 
-func handleTweet(bytes []byte, client Client) {
+func handleTweet(bytes []byte, client Client) bool {
+	var done bool = false
+
 	// This check handles sporadic empty messages
 	if len(bytes) >= 0 {
 		tweet := Tweet{
@@ -18,19 +19,27 @@ func handleTweet(bytes []byte, client Client) {
 		// images
 		if tweet.MediaUrl != "" {
 
-			var wg sync.WaitGroup
+			// tmpFile, _ := ioutil.TempFile("", "*")
+			// defer tmpFile.Close()
 
-			wg.Add(1)
+			// _, err := tmpFile.WriteString("hello")
+			// if err != nil {
+			// 	fmt.Printf("%v\n", err)
+			// }
 
-			go func(tweet Tweet, client Client) {
-				storeImageInServer(tweet, client)
-			}(tweet, client)
+			// tmpFile.Seek(0, 0)
+			// s := bufio.NewScanner(tmpFile)
+			// for s.Scan() {
+			// 	println(s.Text())
+			// }
 
-			wg.Wait()
+			storeImageInServer(tweet, client)
 
-			println("I got out of the goroutine")
+			done = true
 		}
 	}
+
+	return done
 }
 
 func storeImageInServer(tweet Tweet, client Client) {
