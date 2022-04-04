@@ -9,6 +9,7 @@ require (
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/johnfercher/maroto v0.36.0 // indirect
+	go.mongodb.org/mongo-driver v1.8.4 // indirect
 	golang.org/x/image v0.0.0-20220321031419-a8550c1d254a // indirect
 	golang.org/x/sys v0.0.0-20220403020550-483a9cbc67c0 // indirect
 )

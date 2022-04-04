@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/caarlos0/env/v6"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func main() {
@@ -20,19 +21,21 @@ func main() {
 	// for making calls to the Twitter API
 	httpClient := &http.Client{}
 
+	// Create values to be storeed in out Client
+	// struct, including our MongoClient and
+	// our context
 	image := make(chan string)
+
+	ctx, mongoClient := MongoConnect(cfg.MongoUri)
+	mongoClient.Collection = mongoClient.ConfigureCollection(cfg.DatabaseName, cfg.CollectionName)
 
 	client := Client{
 		conf:             cfg,
 		http:             httpClient,
 		imageUrlAndSizes: image,
+		mongoContext:     ctx,
+		mongoClient:      mongoClient,
 	}
-
-	// bytesBuffer := bytes.NewBufferString("testing")
-
-	// decodedBuffer := base64.NewDecoder(base64.StdEncoding, bytesBuffer)
-
-	// io.Copy(os.Stdout, decodedBuffer)
 
 	// Run separate server in goroutine so users can
 	// make requests and we can consume the Twitter
@@ -48,13 +51,14 @@ func main() {
 	// Add Filters to Stream
 	addFilters(client)
 
+	// Start listening to Stream
 	go func(twitterClient Client) {
 		listenToStream(client)
 	}(client)
 
-	for imageUrlAndSize := range client.imageUrlAndSizes {
-		imgUrlAndSize := imageUrlAndSize
-
+	// Listen on client.imageUrlAndSizes channel
+	// for URL to download image from
+	for imgUrlAndSize := range client.imageUrlAndSizes {
 		if imgUrlAndSize == "" {
 			continue
 		} else {
@@ -64,6 +68,32 @@ func main() {
 			fileName, b, _ := downloadImage(imgUrl)
 
 			resizeImage(fileName, b, imgSize)
+
+			// After downloading and resizing the
+			// image, create a MongoDoc with image
+			// metadata to beinserted into the
+			// database
+			imgDoc := MongoDoc{
+				ImageName: fileName,
+				ImagePath: "/images/" + fileName,
+			}
+
+			// Insert the image metadata into
+			// the database
+			res, err := client.mongoClient.InsertImageMetaData(client.mongoContext, imgDoc)
+			if err != nil {
+				println(fmt.Sprintf("Insert Doc error: %v", err))
+			}
+			splitOne := strings.Split(res.InsertedID.(primitive.ObjectID).String(), "(")[1]
+			splitTwo := strings.Split(splitOne, ")")[0]
+			imgId := splitTwo[1 : len(splitTwo)-1]
+			if imgId != "" {
+				println(imgId)
+			}
+
+			// Here is where the reply to the user
+			// with the URL for downloading their
+			// pattern will go
 
 			// This was just proof of concept that
 			// this method works for downloading

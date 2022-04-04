@@ -1,11 +1,19 @@
 package main
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
 
 type Client struct {
 	conf             *Config
 	http             *http.Client
 	imageUrlAndSizes chan string
+	mongoContext     context.Context
+	mongoClient      MongoClient
 }
 
 type Filter struct {
@@ -24,4 +32,15 @@ type Tweet struct {
 	Text             string
 	MediaUrl         string
 	Error            bool
+}
+
+type MongoClient struct {
+	Options    *options.ClientOptions
+	Mongo      *mongo.Client
+	Collection *mongo.Collection
+}
+
+type MongoDoc struct {
+	ImageName string `json:"ImageName Str"`
+	ImagePath string `json:"ImagePath Str"`
 }
