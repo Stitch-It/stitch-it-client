@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -37,6 +38,14 @@ func main() {
 	decodedBuffer := base64.NewDecoder(base64.StdEncoding, bytesBuffer)
 
 	io.Copy(os.Stdout, decodedBuffer)
+
+	go func() {
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			println("hello")
+		})
+
+		log.Fatal(http.ListenAndServe(":3030", nil))
+	}()
 
 	// // Add Filters to Stream
 	addFilters(client)
