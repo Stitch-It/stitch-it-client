@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-
-	"github.com/gofrs/flock"
+	"sync"
 )
 
 func handleTweet(bytes []byte, client Client) {
@@ -19,40 +17,39 @@ func handleTweet(bytes []byte, client Client) {
 		// prevent crash from panic in processing
 		// images
 		if tweet.MediaUrl != "" {
-			storeImageInServer(tweet, client)
+
+			var wg sync.WaitGroup
+
+			wg.Add(1)
+
+			go func(tweet Tweet, client Client) {
+				storeImageInServer(tweet, client)
+			}(tweet, client)
+
+			wg.Wait()
+
+			println("I got out of the goroutine")
 		}
 	}
 }
 
 func storeImageInServer(tweet Tweet, client Client) {
-	quit := make(chan bool)
-	go func(quit chan bool, tweet Tweet) {
-		for {
-			select {
-			case <-quit:
-				return
-			default:
-				// Download Image
-				fileName, b, err := downloadImage(tweet.MediaUrl, tweet.AuthorName)
-				if err != nil {
-					fmt.Printf("%v\n", err)
-				}
+	// Download Image
+	fileName, b, err := downloadImage(tweet.MediaUrl, tweet.AuthorName)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
 
-				// Resize the image
-				resizeImage(fileName, b, tweet.Text)
+	// Resize the image
+	resizeImage(fileName, b, tweet.Text)
 
-				sendProcessedImageToServer(fileName, client)
+	sendProcessedImageToServer(fileName, client)
 
-				// Reply to tweet with URL to download
-				// Excel pattern
+	// Reply to tweet with URL to download
+	// Excel pattern
 
-				fileLock := flock.New(fileName)
+	// fileLock := flock.New(fileName)
 
-				println(strconv.FormatBool(fileLock.Locked()))
+	// println(strconv.FormatBool(fileLock.Locked()))
 
-				// Signal done
-				quit <- true
-			}
-		}
-	}(quit, tweet)
 }
