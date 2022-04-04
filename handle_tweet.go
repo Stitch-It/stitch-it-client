@@ -49,10 +49,15 @@ func storeImageInServer(tweet Tweet, client Client) {
 		fmt.Printf("%v\n", err)
 	}
 
+	// I should be able to just create the temp file
+	// and temp file here instead of an actual file?
+
 	// Resize the image
 	resizeImage(fileName, b, tweet.Text)
 
 	sendProcessedImageToServer(fileName, client)
+
+	// and then hopefully delete the temp file?
 
 	// Reply to tweet with URL to download
 	// Excel pattern

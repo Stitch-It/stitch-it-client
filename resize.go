@@ -31,6 +31,9 @@ func resizeImage(fileName string, b []byte, size string) {
 		fmt.Printf("err: %v\n", err)
 	}
 
+	// I should be able to just create the temp file
+	// here instead of an actual file?
+
 	output, err := os.Create(fileName)
 	if err != nil {
 		fmt.Printf("err: %v\n", err)

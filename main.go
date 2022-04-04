@@ -52,14 +52,5 @@ func main() {
 	// // Add Filters to Stream
 	addFilters(client)
 
-	// var tweetProcessed bool
-
-	// for !tweetProcessed {
-	// 	tweetProcessed = listenToStream(client)
-
-	// 	continue
-	// }
-
-	// Begin listening to stream with httpClient
 	listenToStream(client)
 }
