@@ -32,11 +32,13 @@ func downloadImage(URL string) (string, []byte, error) {
 }
 
 func createFileName(URL string) string {
-	uniqueId := uuid.New()
+	u := uuid.New()
+
+	uniqueId := strings.ReplaceAll(u.String(), "-", "")
 
 	splits := strings.Split(URL, ".")
 
 	fileExt := "." + splits[len(splits)-1]
 
-	return uniqueId.String() + fileExt
+	return uniqueId + fileExt
 }
