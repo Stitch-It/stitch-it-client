@@ -9,42 +9,6 @@ import (
 	"net/http"
 )
 
-// func listenToStream(client Client) bool {
-// 	req, err := http.NewRequest(http.MethodGet, "https://api.twitter.com/2/tweets/search/stream?tweet.fields=text,attachments,source&expansions=author_id,attachments.media_keys&media.fields=url", nil)
-// 	if err != nil {
-// 		fmt.Printf("%v\n", err)
-// 	}
-// 	bearer := fmt.Sprintf("Bearer %s", client.conf.BearerToken)
-// 	req.Header.Set("Authorization", bearer)
-
-// 	resp, err := client.http.Do(req)
-// 	if err != nil {
-// 		fmt.Printf("%v\n", err)
-// 	}
-
-// 	defer resp.Body.Close()
-
-// 	var done bool
-
-// 	reader := bufio.NewReader(resp.Body)
-// 	for !done {
-// 		bts, _ := reader.ReadBytes('\n')
-
-// 		done = handleTweet(bts, client)
-
-// 		continue
-// 	}
-
-// 	// this would be moved outside of the goroutine
-// 	// for listening for a tweet
-// 	// err = os.RemoveAll(".\\images")
-// 	// if err != nil {
-// 	// 	fmt.Printf("%v\n", err)
-// 	// }
-
-// 	return done
-// }
-
 func listenToStream(client Client) {
 	req, err := http.NewRequest(http.MethodGet, "https://api.twitter.com/2/tweets/search/stream?tweet.fields=text,attachments,source&expansions=author_id,attachments.media_keys&media.fields=url", nil)
 	if err != nil {
@@ -66,14 +30,6 @@ func listenToStream(client Client) {
 
 		handleTweet(bts, client)
 	}
-
-	// this would be moved outside of the goroutine
-	// for listening for a tweet
-	// err = os.RemoveAll(".\\images")
-	// if err != nil {
-	// 	fmt.Printf("%v\n", err)
-	// }
-
 }
 
 func addFilters(client Client) {

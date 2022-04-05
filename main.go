@@ -24,17 +24,17 @@ func main() {
 	// Create values to be storeed in out Client
 	// struct, including our MongoClient and
 	// our context
-	image := make(chan string)
+	tweet := make(chan Tweet)
 
 	ctx, mongoClient := MongoConnect(cfg.MongoUri)
 	mongoClient.Collection = mongoClient.ConfigureCollection(cfg.DatabaseName, cfg.CollectionName)
 
 	client := Client{
-		conf:             cfg,
-		http:             httpClient,
-		imageUrlAndSizes: image,
-		mongoContext:     ctx,
-		mongoClient:      mongoClient,
+		conf:         cfg,
+		http:         httpClient,
+		imageTweet:   tweet,
+		mongoContext: ctx,
+		mongoClient:  mongoClient,
 	}
 
 	// Run separate server in goroutine so users can
@@ -56,14 +56,15 @@ func main() {
 		listenToStream(client)
 	}(client)
 
-	// Listen on client.imageUrlAndSizes channel
-	// for URL to download image from
-	for imgUrlAndSize := range client.imageUrlAndSizes {
-		if imgUrlAndSize == "" {
+	// Listen on client.imgTweet channel
+	// for a Tweet to process
+	for imgTweet := range client.imageTweet {
+		if imgTweet.Next {
 			continue
 		} else {
-			imgUrl := strings.Split(imgUrlAndSize, "@-@")[0]
-			imgSize := strings.Split(imgUrlAndSize, "@-@")[1]
+			imgUrl := imgTweet.MediaUrl
+			imgSize := imgTweet.Text
+			// tweetId := imgTweet.Id
 
 			fileName, b, _ := downloadImage(imgUrl)
 

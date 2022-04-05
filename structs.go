@@ -9,11 +9,11 @@ import (
 )
 
 type Client struct {
-	conf             *Config
-	http             *http.Client
-	imageUrlAndSizes chan string
-	mongoContext     context.Context
-	mongoClient      MongoClient
+	conf         *Config
+	http         *http.Client
+	imageTweet   chan Tweet
+	mongoContext context.Context
+	mongoClient  MongoClient
 }
 
 type Filter struct {
@@ -32,6 +32,7 @@ type Tweet struct {
 	Text             string
 	MediaUrl         string
 	Error            bool
+	Next             bool
 }
 
 type MongoClient struct {
