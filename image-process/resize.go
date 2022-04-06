@@ -1,4 +1,4 @@
-package main
+package imgHdl
 
 import (
 	"bytes"
@@ -13,7 +13,7 @@ import (
 	"golang.org/x/image/draw"
 )
 
-func resizeImage(fileName string, b []byte, size string) {
+func ResizeImage(fileName string, b []byte, size string) {
 	width := strings.Split(strings.ToLower(size), "x")[0]
 	w, _ := strconv.Atoi(width)
 	height := strings.Split(strings.ToLower(size), "x")[1]

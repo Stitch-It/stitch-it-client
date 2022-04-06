@@ -1,4 +1,4 @@
-package main
+package imgHdl
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func downloadImage(URL string) (string, []byte, error) {
+func DownloadImage(URL string) (string, []byte, error) {
 	fileName := createFileName(URL)
 
 	res, err := http.Get(URL)

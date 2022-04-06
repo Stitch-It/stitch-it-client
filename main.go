@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/caarlos0/env/v6"
+	imgHdl "github.com/syke99/stitch-it/image-process"
 )
 
 func main() {
@@ -63,9 +64,9 @@ func main() {
 					imgSize := twt.Text
 					//tweetId := imgTweet.Id
 
-					fileName, b, _ := downloadImage(imgUrl)
+					fileName, b, _ := imgHdl.DownloadImage(imgUrl)
 
-					resizeImage(fileName, b, imgSize)
+					imgHdl.ResizeImage(fileName, b, imgSize)
 					//------------------------------
 
 					// Here is where the reply to the user
