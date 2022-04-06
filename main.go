@@ -59,70 +59,65 @@ func main() {
 	// Listen on client.imgTweet channel
 	// for a Tweet to process
 	for imgTweet := range client.imageTweet {
-		if imgTweet.Next {
-			continue
-		} else {
-			done := make(chan bool)
-			go func(twt Tweet) {
-				for {
-					select {
-					case <-done:
-						return
-					default:
-						imgUrl := twt.MediaUrl
-						imgSize := twt.Text
-						//tweetId := imgTweet.Id
+		done := make(chan bool)
+		go func(twt Tweet) {
+			for {
+				select {
+				case <-done:
+					return
+				default:
+					imgUrl := twt.MediaUrl
+					imgSize := twt.Text
+					//tweetId := imgTweet.Id
 
-						fileName, b, _ := downloadImage(imgUrl)
+					fileName, b, _ := downloadImage(imgUrl)
 
-						resizeImage(fileName, b, imgSize)
+					resizeImage(fileName, b, imgSize)
 
-						// After downloading and resizing the
-						// image, create a MongoDoc with image
-						// metadata to beinserted into the
-						// database
-						imgDoc := MongoDoc{
-							ImageName: fileName,
-							ImagePath: "/images/" + fileName,
-						}
-
-						// Insert the image metadata into
-						// the database
-						res, err := client.mongoClient.InsertImageMetaData(client.mongoContext, imgDoc)
-						if err != nil {
-							println(fmt.Sprintf("Insert Doc error: %v", err))
-						}
-						splitOne := strings.Split(res.InsertedID.(primitive.ObjectID).String(), "(")[1]
-						splitTwo := strings.Split(splitOne, ")")[0]
-						imgId := splitTwo[1 : len(splitTwo)-1]
-						if imgId != "" {
-							println(imgId)
-						}
-
-						//------------------------------
-
-						// Here is where the reply to the user
-						// with the URL for downloading their
-						// pattern will go
-
-						// This was just proof of concept that
-						// this method works for downloading
-						// images and them being able to be deleted
-						// as well so that I can age and delete them
-						// later
-						// time.Sleep(15 * time.Second)
-
-						// err := os.Remove("./images/" + fileName)
-						// if err != nil {
-						// 	fmt.Printf("%v\n", err)
-						// }
-
-						done <- true
+					// After downloading and resizing the
+					// image, create a MongoDoc with image
+					// metadata to beinserted into the
+					// database
+					imgDoc := MongoDoc{
+						ImageName: fileName,
+						ImagePath: "/images/" + fileName,
 					}
+
+					// Insert the image metadata into
+					// the database
+					res, err := client.mongoClient.InsertImageMetaData(client.mongoContext, imgDoc)
+					if err != nil {
+						println(fmt.Sprintf("Insert Doc error: %v", err))
+					}
+					splitOne := strings.Split(res.InsertedID.(primitive.ObjectID).String(), "(")[1]
+					splitTwo := strings.Split(splitOne, ")")[0]
+					imgId := splitTwo[1 : len(splitTwo)-1]
+					if imgId != "" {
+						println(imgId)
+					}
+
+					//------------------------------
+
+					// Here is where the reply to the user
+					// with the URL for downloading their
+					// pattern will go
+
+					// This was just proof of concept that
+					// this method works for downloading
+					// images and them being able to be deleted
+					// as well so that I can age and delete them
+					// later
+					// time.Sleep(15 * time.Second)
+
+					// err := os.Remove("./images/" + fileName)
+					// if err != nil {
+					// 	fmt.Printf("%v\n", err)
+					// }
+
+					done <- true
 				}
+			}
 
-			}(imgTweet)
-
-		}
+		}(imgTweet)
 	}
 }

@@ -14,15 +14,15 @@ func handleTweet(bytes []byte, client Client) bool {
 		// prevent crash from panic in processing
 		// images
 		if tweet.MediaUrl != "" {
-			tweet.Next = false
+			// tweet.Next = false
 
 			client.imageTweet <- tweet
 
-			nextTweet := Tweet{
-				Next: true,
-			}
+			// nextTweet := Tweet{
+			// 	Next: true,
+			// }
 
-			client.imageTweet <- nextTweet
+			// client.imageTweet <- nextTweet
 
 			done = true
 		}

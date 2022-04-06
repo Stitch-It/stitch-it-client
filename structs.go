@@ -32,7 +32,7 @@ type Tweet struct {
 	Text             string
 	MediaUrl         string
 	Error            bool
-	Next             bool
+	//Next             bool
 }
 
 type MongoClient struct {
