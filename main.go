@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/caarlos0/env/v6"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func main() {
@@ -26,15 +24,10 @@ func main() {
 	// our context
 	tweet := make(chan Tweet)
 
-	ctx, mongoClient := MongoConnect(cfg.MongoUri)
-	mongoClient.Collection = mongoClient.ConfigureCollection(cfg.DatabaseName, cfg.CollectionName)
-
 	client := Client{
-		conf:         cfg,
-		http:         httpClient,
-		imageTweet:   tweet,
-		mongoContext: ctx,
-		mongoClient:  mongoClient,
+		conf:       cfg,
+		http:       httpClient,
+		imageTweet: tweet,
 	}
 
 	// Run separate server in goroutine so users can
@@ -73,29 +66,6 @@ func main() {
 					fileName, b, _ := downloadImage(imgUrl)
 
 					resizeImage(fileName, b, imgSize)
-
-					// After downloading and resizing the
-					// image, create a MongoDoc with image
-					// metadata to beinserted into the
-					// database
-					imgDoc := MongoDoc{
-						ImageName: fileName,
-						ImagePath: "/images/" + fileName,
-					}
-
-					// Insert the image metadata into
-					// the database
-					res, err := client.mongoClient.InsertImageMetaData(client.mongoContext, imgDoc)
-					if err != nil {
-						println(fmt.Sprintf("Insert Doc error: %v", err))
-					}
-					splitOne := strings.Split(res.InsertedID.(primitive.ObjectID).String(), "(")[1]
-					splitTwo := strings.Split(splitOne, ")")[0]
-					imgId := splitTwo[1 : len(splitTwo)-1]
-					if imgId != "" {
-						println(imgId)
-					}
-
 					//------------------------------
 
 					// Here is where the reply to the user
