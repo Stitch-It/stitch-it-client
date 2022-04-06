@@ -19,6 +19,9 @@ func resizeImage(fileName string, b []byte, size string) {
 	height := strings.Split(strings.ToLower(size), "x")[1]
 	h, _ := strconv.Atoi(height)
 
+	// Later on, this will be used whenever
+	// periodically deleting images folder
+	// will be added
 	if _, err := os.Stat("./images/"); os.IsNotExist(err) {
 		err = os.Mkdir("images", 0755)
 		if err != nil {
@@ -26,12 +29,7 @@ func resizeImage(fileName string, b []byte, size string) {
 		}
 	}
 
-	err := os.Chdir("images")
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
-
-	output, err := os.Create(fileName)
+	output, err := os.Create("./images/" + fileName)
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
@@ -53,8 +51,4 @@ func resizeImage(fileName string, b []byte, size string) {
 		png.Encode(output, dst)
 	}
 
-	err = os.Chdir("..")
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
 }
