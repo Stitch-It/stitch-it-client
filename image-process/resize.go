@@ -1,4 +1,4 @@
-package imgHdl
+package imgProc
 
 import (
 	"bytes"

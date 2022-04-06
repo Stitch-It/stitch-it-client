@@ -1,4 +1,4 @@
-package main
+package twitter
 
 import (
 	"bufio"
@@ -14,10 +14,10 @@ func listenToStream(client Client) {
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
-	bearer := fmt.Sprintf("Bearer %s", client.conf.BearerToken)
+	bearer := fmt.Sprintf("Bearer %s", client.Conf.BearerToken)
 	req.Header.Set("Authorization", bearer)
 
-	resp, err := client.http.Do(req)
+	resp, err := client.Http.Do(req)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
@@ -54,11 +54,11 @@ func addFilters(client Client) {
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
-	bearer := fmt.Sprintf("Bearer %s", client.conf.BearerToken)
+	bearer := fmt.Sprintf("Bearer %s", client.Conf.BearerToken)
 	req.Header.Set("Content-type", "application/json")
 	req.Header.Set("Authorization", bearer)
 
-	resp, err := client.http.Do(req)
+	resp, err := client.Http.Do(req)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}

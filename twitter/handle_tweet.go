@@ -1,4 +1,4 @@
-package main
+package twitter
 
 func handleTweet(bytes []byte, client Client) bool {
 	var done bool = false
@@ -16,7 +16,7 @@ func handleTweet(bytes []byte, client Client) bool {
 		if tweet.MediaUrl != "" {
 			// tweet.Next = false
 
-			client.imageTweet <- tweet
+			client.ImageTweet <- tweet
 
 			// nextTweet := Tweet{
 			// 	Next: true,

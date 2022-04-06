@@ -7,11 +7,12 @@ import (
 
 	"github.com/caarlos0/env/v6"
 	imgHdl "github.com/syke99/stitch-it/image-process"
+	"github.com/syke99/stitch-it/twitter"
 )
 
 func main() {
 	// Parse env variables for Twitter API keys
-	cfg := &Config{}
+	cfg := &twitter.Config{}
 	if err := env.Parse(cfg); err != nil {
 		fmt.Printf("%v\n", err)
 	}
@@ -23,12 +24,12 @@ func main() {
 	// Create values to be storeed in out Client
 	// struct, including our MongoClient and
 	// our context
-	tweet := make(chan Tweet)
+	tweet := make(chan twitter.Tweet)
 
-	client := Client{
-		conf:       cfg,
-		http:       httpClient,
-		imageTweet: tweet,
+	client := twitter.Client{
+		Conf:       cfg,
+		Http:       httpClient,
+		ImageTweet: tweet,
 	}
 
 	// Run separate server in goroutine so users can
@@ -42,19 +43,21 @@ func main() {
 		log.Fatal(http.ListenAndServe(":3030", nil))
 	}()
 
-	// Add Filters to Stream
-	addFilters(client)
+	// // Add Filters to Stream
+	// addFilters(client)
 
-	// Start listening to Stream
-	go func(twitterClient Client) {
-		listenToStream(client)
-	}(client)
+	// // Start listening to Stream
+	// go func(twitterClient Client) {
+	// 	listenToStream(client)
+	// }(client)
+
+	twitter.StartStream(client)
 
 	// Listen on client.imgTweet channel
 	// for a Tweet to process
-	for imgTweet := range client.imageTweet {
+	for imgTweet := range client.ImageTweet {
 		done := make(chan bool)
-		go func(twt Tweet) {
+		go func(twt twitter.Tweet) {
 			for {
 				select {
 				case <-done:
