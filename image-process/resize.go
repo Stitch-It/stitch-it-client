@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/jpeg"
+	"image/png"
 	"os"
 	"strconv"
 	"strings"
@@ -11,7 +13,7 @@ import (
 	"golang.org/x/image/draw"
 )
 
-func ResizeImage(fileName string, b []byte, size string) image.Image {
+func ResizeImage(fileName string, b []byte, size string) {
 	width := strings.Split(strings.ToLower(size), "x")[0]
 	w, _ := strconv.Atoi(width)
 	height := strings.Split(strings.ToLower(size), "x")[1]
@@ -42,9 +44,10 @@ func ResizeImage(fileName string, b []byte, size string) image.Image {
 
 	draw.BiLinear.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
 
-	// image.Image is an interface, so we can just
-	// use dst instead of encoding them to image
-	// files and then decoding those image files
-	// to generate (patterns) excel files
-	return dst
+	switch strings.Split(fileName, ".")[1] {
+	case "jpeg", "jpg":
+		jpeg.Encode(output, dst, nil)
+	case "png":
+		png.Encode(output, dst)
+	}
 }
