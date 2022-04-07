@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	// Parse env variables for Twitter API keys
+	// Parse env variables for Twitter Bearer Token
 	cfg := &twitter.Config{}
 	if err := env.Parse(cfg); err != nil {
 		fmt.Printf("%v\n", err)
@@ -64,7 +64,7 @@ func main() {
 
 					image := imgHdl.ResizeImage(fileName, b, imgSize)
 
-					gen.GenerateExcelPattern(image, twt.AuthorScreenName)
+					gen.GenerateExcelPattern(image, fileName, twt.AuthorScreenName)
 					//------------------------------
 
 					// Here is where the reply to the user
