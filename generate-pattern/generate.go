@@ -5,8 +5,8 @@ import (
 	"image"
 	"os"
 
-	"github.com/syke99/go-c2dmc"
-	"github.com/tealeg/xlsx/v3"
+	dmc "github.com/syke99/go-c2dmc"
+	"github.com/tealeg/xlsx/v2"
 )
 
 func GenerateExcelPattern(fileName, authorScreenName string) string {
@@ -27,17 +27,11 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	imgFile.Close()
-
-	err = os.Remove("./images/" + fileName)
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
-
 	path := "./patterns/" + fileName
 
 	width := img.Bounds().Max.X
 	height := img.Bounds().Max.Y
+	println(path)
 
 	wb := xlsx.NewFile()
 
@@ -71,13 +65,15 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 
 	generateColorListSheet(colorMap, cellStyle, colorListSheet)
 
-	wb.Save(path)
+	err = wb.Save(path)
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
 
 	return path
 }
 
 func generatePatternSheet(image image.Image, patternSheet *xlsx.Sheet, cellStyle *xlsx.Style, width, height int) map[string]int {
-	defer patternSheet.Close()
 	colorNumber := 1
 
 	colorMap := make(map[string]int)
@@ -98,6 +94,7 @@ func generatePatternSheet(image image.Image, patternSheet *xlsx.Sheet, cellStyle
 			if x == 0 && y == 0 {
 				colorMap[color] = colorNumber
 				cell.SetInt(colorNumber)
+				cell.SetStyle(cellStyle)
 				colorNumber++
 			} else {
 				if _, ok := colorMap[color]; !ok {
@@ -114,8 +111,6 @@ func generatePatternSheet(image image.Image, patternSheet *xlsx.Sheet, cellStyle
 }
 
 func generateColorListSheet(colorMap map[string]int, cellStyle *xlsx.Style, colorListSheet *xlsx.Sheet) {
-	defer colorListSheet.Close()
-
 	for clr, nmb := range colorMap {
 		row := colorListSheet.AddRow()
 

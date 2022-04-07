@@ -62,9 +62,9 @@ func main() {
 
 					fileName, b, _ := imgHdl.DownloadImage(imgUrl)
 
-					image := imgHdl.ResizeImage(fileName, b, imgSize)
+					imgHdl.ResizeImage(fileName, b, imgSize)
 
-					gen.GenerateExcelPattern(image, fileName, twt.AuthorScreenName)
+					gen.GenerateExcelPattern(fileName, twt.AuthorScreenName)
 					//------------------------------
 
 					// Here is where the reply to the user
