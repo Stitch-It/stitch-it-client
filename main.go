@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/caarlos0/env/v6"
+	gen "github.com/syke99/stitch-it/generate-pattern"
 	imgHdl "github.com/syke99/stitch-it/image-process"
 	"github.com/syke99/stitch-it/twitter"
 )
@@ -61,7 +62,9 @@ func main() {
 
 					fileName, b, _ := imgHdl.DownloadImage(imgUrl)
 
-					imgHdl.ResizeImage(fileName, b, imgSize)
+					image := imgHdl.ResizeImage(fileName, b, imgSize)
+
+					gen.GenerateExcelPattern(image, twt.AuthorScreenName)
 					//------------------------------
 
 					// Here is where the reply to the user
