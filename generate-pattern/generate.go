@@ -79,8 +79,8 @@ func generatePatternSheet(image image.Image, patternFile *excelize.File, width, 
 
 	colorMap := make(map[string]int)
 
-	for x := 0; x < width; x++ {
-		for y := 0; y < height; y++ {
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
 
 			rgbaColor := image.At(x, y)
 
@@ -106,7 +106,6 @@ func generatePatternSheet(image image.Image, patternFile *excelize.File, width, 
 					colorNumber++
 				} else {
 					patternFile.SetCellValue("Pattern", cellName, colorNumber)
-					colorNumber++
 				}
 			}
 		}
