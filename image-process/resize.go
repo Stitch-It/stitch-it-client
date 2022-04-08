@@ -19,6 +19,18 @@ func ResizeImage(fileName string, b []byte, size string) {
 	height := strings.Split(strings.ToLower(size), "x")[1]
 	h, _ := strconv.Atoi(height)
 
+	curDir, err := os.Getwd()
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+
+	if strings.HasSuffix(curDir, "patterns") {
+		err = os.Chdir("..")
+		if err != nil {
+			fmt.Printf("err: %v\n", err)
+		}
+	}
+
 	// Later on, this will be used whenever
 	// periodically deleting images folder
 	// will be added

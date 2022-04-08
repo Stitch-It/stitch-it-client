@@ -12,6 +12,7 @@ import (
 )
 
 func GenerateExcelPattern(fileName, authorScreenName string) string {
+
 	if _, err := os.Stat("./patterns/"); os.IsNotExist(err) {
 		err = os.Mkdir("patterns", 0755)
 		if err != nil {
@@ -34,10 +35,10 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	// err = os.Chdir("./patterns")
-	// if err != nil {
-	// 	fmt.Printf("err: %v\n", err)
-	// }
+	err = os.Chdir("./patterns")
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
 
 	fileNameNoExtension := strings.Split(fileName, ".")[0]
 
@@ -57,21 +58,10 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 
 	generateColorListSheet(colorMap, patternFile)
 
-	// patternFile.SetActiveSheet(colorListSheet)
-
-	// patternFile.SetSheetViewOptions("Pattern", -1, excelize.ShowGridLines(true), excelize.TopLeftCell("A1"))
-
 	err = patternFile.SaveAs(fileNameNoExtension + ".xlsx")
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
-	} else {
-		println("there's something fishy going on...")
 	}
-
-	// err = os.Chdir("..")
-	// if err != nil {
-	// 	fmt.Printf("err: %v\n", err)
-	// }
 
 	return "./patterns/" + fileNameNoExtension
 }
