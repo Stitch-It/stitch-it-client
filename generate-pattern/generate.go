@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"image"
 	"os"
+	"strconv"
+	"strings"
 
 	dmc "github.com/syke99/go-c2dmc"
-	"github.com/tealeg/xlsx/v2"
+	"github.com/xuri/excelize/v2"
 )
 
 func GenerateExcelPattern(fileName, authorScreenName string) string {
@@ -27,63 +29,60 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	path := "./patterns/" + fileName
+	err = imgFile.Close()
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+
+	err = os.Chdir("./patterns")
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+
+	fileNameNoExtension := strings.Split(fileName, ".")[0]
 
 	width := img.Bounds().Max.X
 	height := img.Bounds().Max.Y
-	println(path)
 
-	wb := xlsx.NewFile()
+	patternFile := excelize.NewFile()
 
-	patternSheet, err := wb.AddSheet("Pattern")
+	patternFile.DeleteSheet("Sheet1")
+
+	patternSheet := patternFile.NewSheet("Pattern")
+	println(patternSheet)
+	colorListSheet := patternFile.NewSheet("List")
+	println(colorListSheet)
+
+	colorMap := generatePatternSheet(img, patternFile, width, height)
+
+	generateColorListSheet(colorMap, patternFile)
+
+	patternFile.SetActiveSheet(colorListSheet)
+
+	patternFile.SetSheetViewOptions("Pattern", -1, excelize.ShowGridLines(true), excelize.TopLeftCell("A1"))
+
+	err = patternFile.SaveAs(fileNameNoExtension + ".xlsx")
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	cellStyle := xlsx.NewStyle()
-	cellStyle.Alignment.Horizontal = "center"
-	cellStyle.Alignment.Vertical = "center"
-	cellStyle.Border.Left = "solid"
-	cellStyle.Border.LeftColor = "black"
-	cellStyle.Border.Right = "solid"
-	cellStyle.Border.RightColor = "black"
-	cellStyle.Border.Top = "solid"
-	cellStyle.Border.TopColor = "black"
-	cellStyle.Border.Bottom = "solid"
-	cellStyle.Border.BottomColor = "black"
-	cellStyle.Font.Bold = true
-	cellStyle.ApplyAlignment = true
-	cellStyle.ApplyBorder = true
-	cellStyle.ApplyFont = true
-
-	colorMap := generatePatternSheet(img, patternSheet, cellStyle, width, height)
-
-	colorListSheet, err := wb.AddSheet("Color List")
+	err = os.Chdir("..")
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	generateColorListSheet(colorMap, cellStyle, colorListSheet)
-
-	err = wb.Save(path)
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
-
-	return path
+	return "./patterns/" + fileNameNoExtension
 }
 
-func generatePatternSheet(image image.Image, patternSheet *xlsx.Sheet, cellStyle *xlsx.Style, width, height int) map[string]int {
+func generatePatternSheet(image image.Image, patternFile *excelize.File, width, height int) map[string]int {
 	colorNumber := 1
 
 	colorMap := make(map[string]int)
 
 	for x := 0; x < width; x++ {
-		row := patternSheet.AddRow()
 		for y := 0; y < height; y++ {
-			cell := row.AddCell()
 
-			rgbaColor := image.At(width, height)
+			rgbaColor := image.At(x, y)
 
 			colorBank := dmc.NewColorBank()
 
@@ -91,18 +90,24 @@ func generatePatternSheet(image image.Image, patternSheet *xlsx.Sheet, cellStyle
 
 			color, _ := colorBank.Rgb(r, g, b)
 
-			if x == 0 && y == 0 {
-				colorMap[color] = colorNumber
-				cell.SetInt(colorNumber)
-				cell.SetStyle(cellStyle)
+			cellName, err := excelize.CoordinatesToCellName(x+1, y+1)
+			if err != nil {
+				fmt.Printf("err: %v\n", err)
+			}
+
+			if cellName == "A1" {
+				colorMap[color] = 1
+				patternFile.SetCellValue("Pattern", cellName, colorNumber)
 				colorNumber++
 			} else {
 				if _, ok := colorMap[color]; !ok {
 					colorMap[color] = colorNumber
+					patternFile.SetCellValue("Pattern", cellName, colorNumber)
+					colorNumber++
+				} else {
+					patternFile.SetCellValue("Pattern", cellName, colorNumber)
+					colorNumber++
 				}
-				cell.SetInt(colorNumber)
-				cell.SetStyle(cellStyle)
-				colorNumber++
 			}
 		}
 	}
@@ -110,16 +115,9 @@ func generatePatternSheet(image image.Image, patternSheet *xlsx.Sheet, cellStyle
 	return colorMap
 }
 
-func generateColorListSheet(colorMap map[string]int, cellStyle *xlsx.Style, colorListSheet *xlsx.Sheet) {
+func generateColorListSheet(colorMap map[string]int, patternFile *excelize.File) {
 	for clr, nmb := range colorMap {
-		row := colorListSheet.AddRow()
-
-		numberCell := row.AddCell()
-		numberCell.SetInt(nmb)
-		numberCell.SetStyle(cellStyle)
-
-		colorCell := row.AddCell()
-		colorCell.SetString(clr)
-		colorCell.SetStyle(cellStyle)
+		patternFile.SetCellValue("List", "A"+strconv.Itoa(nmb), nmb)
+		patternFile.SetCellValue("List", "B"+strconv.Itoa(nmb), clr)
 	}
 }
