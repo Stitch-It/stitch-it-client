@@ -47,10 +47,7 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 
 	patternFile := excelize.NewFile()
 
-	patternFile.DeleteSheet("Sheet1")
-
-	patternSheet := patternFile.NewSheet("Pattern")
-	println(patternSheet)
+	patternFile.SetSheetName("Sheet1", "Pattern")
 	colorListSheet := patternFile.NewSheet("List")
 	println(colorListSheet)
 
@@ -92,16 +89,14 @@ func generatePatternSheet(image image.Image, patternFile *excelize.File, width, 
 			// I believe the issue lies here
 			if cellName == "A1" {
 				colorMap[color] = 1
-				patternFile.SetCellValue("Pattern", cellName, colorNumber)
 			} else {
 				if _, ok := colorMap[color]; !ok {
-					colorMap[color] = colorNumber
-					patternFile.SetCellValue("Pattern", cellName, colorNumber)
 					colorNumber++
-				} else {
-					patternFile.SetCellValue("Pattern", cellName, colorNumber)
+					colorMap[color] = colorNumber
 				}
 			}
+
+			patternFile.SetCellValue("Pattern", cellName, colorMap[color])
 		}
 	}
 
