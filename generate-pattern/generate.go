@@ -93,7 +93,6 @@ func generatePatternSheet(image image.Image, patternFile *excelize.File, width, 
 			if cellName == "A1" {
 				colorMap[color] = 1
 				patternFile.SetCellValue("Pattern", cellName, colorNumber)
-				colorNumber++
 			} else {
 				if _, ok := colorMap[color]; !ok {
 					colorMap[color] = colorNumber
