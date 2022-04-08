@@ -40,7 +40,7 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	fileNameNoExtension := strings.Split(fileName, ".")[0]
+	fileNameXlsxExtension := strings.Split(fileName, ".")[0]
 
 	width := img.Bounds().Max.X
 	height := img.Bounds().Max.Y
@@ -55,12 +55,12 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 
 	generateColorListSheet(colorMap, patternFile)
 
-	err = patternFile.SaveAs(fileNameNoExtension + ".xlsx")
+	err = patternFile.SaveAs(fileNameXlsxExtension + "@" + authorScreenName + ".xlsx")
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
 
-	return "./patterns/" + fileNameNoExtension
+	return "./patterns/" + fileNameXlsxExtension
 }
 
 func generatePatternSheet(image image.Image, patternFile *excelize.File, width, height int) map[string]int {
