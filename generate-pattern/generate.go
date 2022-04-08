@@ -82,15 +82,14 @@ func generatePatternSheet(image image.Image, patternFile *excelize.File, width, 
 
 			r, g, b := colorBank.RgbA(rgbaColor)
 
-			l_, a_, b_ := colorBank.RgbToLab(r, g, b)
-
-			color, _ := colorBank.LabToDmc(l_, a_, b_)
+			color, _ := colorBank.RgbToDmc(r, g, b)
 
 			cellName, err := excelize.CoordinatesToCellName(x+1, y+1)
 			if err != nil {
 				fmt.Printf("err: %v\n", err)
 			}
 
+			// I believe the issue lies here
 			if cellName == "A1" {
 				colorMap[color] = 1
 				patternFile.SetCellValue("Pattern", cellName, colorNumber)
