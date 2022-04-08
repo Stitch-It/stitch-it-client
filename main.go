@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/caarlos0/env/v6"
@@ -36,13 +35,13 @@ func main() {
 	// Run separate server in goroutine so users can
 	// make requests and we can consume the Twitter
 	// API at the same time
-	go func() {
-		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			println("hello")
-		})
+	// go func() {
+	// 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 		println("hello")
+	// 	})
 
-		log.Fatal(http.ListenAndServe(":3030", nil))
-	}()
+	// 	log.Fatal(http.ListenAndServe(":3030", nil))
+	// }()
 
 	twitter.StartStream(client)
 

@@ -64,6 +64,8 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 	err = patternFile.SaveAs(fileNameNoExtension + ".xlsx")
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
+	} else {
+		println("there's something fishy going on...")
 	}
 
 	// err = os.Chdir("..")
