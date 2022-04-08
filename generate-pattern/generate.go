@@ -82,7 +82,9 @@ func generatePatternSheet(image image.Image, patternFile *excelize.File, width, 
 
 			r, g, b := colorBank.RgbA(rgbaColor)
 
-			color, _ := colorBank.Rgb(r, g, b)
+			l_, a_, b_ := colorBank.RgbToLab(r, g, b)
+
+			color, _ := colorBank.LabToDmc(l_, a_, b_)
 
 			cellName, err := excelize.CoordinatesToCellName(x+1, y+1)
 			if err != nil {

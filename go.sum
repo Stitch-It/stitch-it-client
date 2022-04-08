@@ -32,6 +32,8 @@ github.com/syke99/go-c2dmc v1.0.3 h1:mHbk0ButidWmxjd4P8pyyDRVEyU/hdDv2ohhCuPw2lk
 github.com/syke99/go-c2dmc v1.0.3/go.mod h1:n3mD0b4Tu1ektyztma9Rl9vqz+J3AMhMRgay5aSBkoY=
 github.com/syke99/go-c2dmc v1.0.4 h1:AM6euZV62yBrnwbnqPL25sHf+XTRocY7fZ9jB3iUwpI=
 github.com/syke99/go-c2dmc v1.0.4/go.mod h1:n3mD0b4Tu1ektyztma9Rl9vqz+J3AMhMRgay5aSBkoY=
+github.com/syke99/go-c2dmc v1.0.5 h1:zz8u1DojKwaj2XhvFmaTsJrYl/jm1XGtzoJ+fhGJaiA=
+github.com/syke99/go-c2dmc v1.0.5/go.mod h1:n3mD0b4Tu1ektyztma9Rl9vqz+J3AMhMRgay5aSBkoY=
 github.com/xuri/efp v0.0.0-20210322160811-ab561f5b45e3 h1:EpI0bqf/eX9SdZDwlMmahKM+CDBgNbsXMhsN28XrM8o=
 github.com/xuri/efp v0.0.0-20210322160811-ab561f5b45e3/go.mod h1:ybY/Jr0T0GTCnYjKqmdwxyxn2BQf2RcQIIvex5QldPI=
 github.com/xuri/efp v0.0.0-20220407160117-ad0f7a785be8 h1:3X7aE0iLKJ5j+tz58BpvIZkXNV7Yq4jC93Z/rbN2Fxk=
