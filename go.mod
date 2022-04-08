@@ -1,4 +1,4 @@
-module github.com/syke99/stitch-it
+module github.com/Stitch-It/stitch-it
 
 go 1.16
 

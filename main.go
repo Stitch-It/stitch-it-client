@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	gen "github.com/Stitch-It/stitch-it/generate-pattern"
+	imgHdl "github.com/Stitch-It/stitch-it/image-process"
+	"github.com/Stitch-It/stitch-it/twitter"
 	"github.com/caarlos0/env/v6"
-	gen "github.com/syke99/stitch-it/generate-pattern"
-	imgHdl "github.com/syke99/stitch-it/image-process"
-	"github.com/syke99/stitch-it/twitter"
 )
 
 func main() {
