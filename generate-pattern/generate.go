@@ -47,9 +47,9 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 
 	patternFile := excelize.NewFile()
 
-	patternFile.SetSheetName("Sheet1", "Pattern")
-	colorListSheet := patternFile.NewSheet("List")
-	println(colorListSheet)
+	patternFile.SetSheetName("Sheet1", "List")
+	patternSheet := patternFile.NewSheet("Pattern")
+	println(patternSheet)
 
 	colorMap := generatePatternSheet(img, patternFile, width, height)
 
@@ -59,6 +59,8 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
+
+	patternFile.Close()
 
 	return "./patterns/" + fileNameXlsxExtension
 }
@@ -86,7 +88,6 @@ func generatePatternSheet(image image.Image, patternFile *excelize.File, width, 
 				fmt.Printf("err: %v\n", err)
 			}
 
-			// I believe the issue lies here
 			if cellName == "A1" {
 				colorMap[color] = 1
 			} else {
