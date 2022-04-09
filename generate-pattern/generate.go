@@ -65,7 +65,7 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 	return "./patterns/" + fileNameXlsxExtension
 }
 
-func generatePatternSheet(image image.Image, patternFile *excelize.File, width, height int) map[string]int {
+func generatePatternSheet(img image.Image, patternFile *excelize.File, width, height int) map[string]int {
 	colorNumber := 1
 
 	colorMap := make(map[string]int)
@@ -73,13 +73,15 @@ func generatePatternSheet(image image.Image, patternFile *excelize.File, width, 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 
-			rgbaColor := image.At(x, y)
+			rgbaColor := img.At(x, y)
 
-			rgbaColor.RGBA()
+			r_, g_, b_, _ := rgbaColor.RGBA()
+
+			r := float64(r_ / 255)
+			g := float64(g_ / 255)
+			b := float64(b_ / 255)
 
 			colorBank := dmc.NewColorBank()
-
-			r, g, b := colorBank.RgbA(rgbaColor)
 
 			color, _ := colorBank.RgbToDmc(r, g, b)
 

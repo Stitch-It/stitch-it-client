@@ -54,7 +54,7 @@ func ResizeImage(fileName string, b []byte, size string) {
 
 	dst := image.NewRGBA(image.Rect(0, 0, w, h))
 
-	draw.BiLinear.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
+	draw.CatmullRom.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
 
 	switch strings.Split(fileName, ".")[1] {
 	case "jpeg", "jpg":
