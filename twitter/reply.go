@@ -14,21 +14,27 @@ func ReplyUrl(client Client, tweet Tweet, fileName string) {
 		InReplyToStatusId: tweet.Id,
 	}
 
-	reply := ReplyTweet{
-		Text:    "hello",
-		ReplyId: replyId,
-	}
+	var reply ReplyTweet
 
-	body, _ := json.Marshal(reply)
+	reply.Text = "hello"
+	reply.ReplyToId = replyId
+
+	twt := make(map[string]interface{})
+	twt["text"] = reply.Text
+	twt["reply"] = reply.ReplyToId
+
+	body, _ := json.Marshal(twt)
+
+	//fmt.Printf("%s\n", body)
 
 	req, err := http.NewRequest(http.MethodPost, "https://api.twitter.com/2/tweets", bytes.NewBuffer(body))
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
-	bearer := fmt.Sprintf("Bearer %s", client.Conf.BearerToken)
-	req.Header.Set("Authorization", bearer)
+	req.Header.Set("Content-type", "application/json")
+	//req.Header.Set("Authorization", bearer)
 
-	resp, err := client.Http.Do(req)
+	resp, err := client.Oauth.Do(req)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}

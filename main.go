@@ -8,6 +8,7 @@ import (
 	imgHdl "github.com/Stitch-It/stitch-it/image-process"
 	"github.com/Stitch-It/stitch-it/twitter"
 	"github.com/caarlos0/env/v6"
+	"github.com/dghubble/oauth1"
 )
 
 func main() {
@@ -17,9 +18,14 @@ func main() {
 		fmt.Printf("%v\n", err)
 	}
 
+	config := oauth1.NewConfig(cfg.ConsumerKey, cfg.ConsumerSecret)
+	token := oauth1.NewToken(cfg.AccessToken, cfg.AccessSecret)
+
 	// Create a new httpClient Bearer Token
 	// for making calls to the Twitter API
 	httpClient := &http.Client{}
+
+	oauthClient := config.Client(oauth1.NoContext, token)
 
 	// Create values to be storeed in out Client
 	// struct, including our MongoClient and
@@ -29,6 +35,7 @@ func main() {
 	client := twitter.Client{
 		Conf:       cfg,
 		Http:       httpClient,
+		Oauth:      oauthClient,
 		ImageTweet: tweet,
 	}
 
