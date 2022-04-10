@@ -18,18 +18,22 @@ func main() {
 		fmt.Printf("%v\n", err)
 	}
 
+	// Create a new httpClient that will use
+	// the Bearer Token to authorize into
+	// endpoint for listening to Tweet stream
+	httpClient := &http.Client{}
+
+	// Create oauthClient for authorization into
+	// endpoint for replying to tweets
 	config := oauth1.NewConfig(cfg.ConsumerKey, cfg.ConsumerSecret)
 	token := oauth1.NewToken(cfg.AccessToken, cfg.AccessSecret)
 
-	// Create a new httpClient Bearer Token
-	// for making calls to the Twitter API
-	httpClient := &http.Client{}
-
 	oauthClient := config.Client(oauth1.NoContext, token)
 
-	// Create values to be storeed in out Client
-	// struct, including our MongoClient and
-	// our context
+	// tweet is a channel for the stream to send
+	// individual Tweets on for processing, pattern
+	// generation, and Tweet response in separate
+	// goroutines for each tweet
 	tweet := make(chan twitter.Tweet)
 
 	client := twitter.Client{
