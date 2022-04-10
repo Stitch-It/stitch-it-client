@@ -11,7 +11,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func GenerateExcelPattern(fileName, authorScreenName string) string {
+func GenerateExcelPattern(fileName, authorScreenName string) {
 
 	if _, err := os.Stat("./patterns/"); os.IsNotExist(err) {
 		err = os.Mkdir("patterns", 0755)
@@ -47,25 +47,28 @@ func GenerateExcelPattern(fileName, authorScreenName string) string {
 
 	patternFile := excelize.NewFile()
 
+	defer patternFile.Close()
+
 	patternFile.SetSheetName("Sheet1", "List")
 	patternSheet := patternFile.NewSheet("Pattern")
 	println(patternSheet)
 
-	colorMap := generatePatternSheet(img, patternFile, width, height)
+	cellStyle, err := patternFile.NewStyle(`"border":[{"type":"left","color":"000000","style":2},{"type":"top","color":"000000","style":2},{"type":"bottom","color":"000000","style":2},{"type":"right","color":"000000","style":2}]`)
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
 
-	generateColorListSheet(colorMap, patternFile)
+	colorMap := generatePatternSheet(img, patternFile, cellStyle, width, height)
+
+	generateColorListSheet(colorMap, patternFile, cellStyle)
 
 	err = patternFile.SaveAs(fileNameXlsxExtension + "@" + authorScreenName + ".xlsx")
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
-
-	patternFile.Close()
-
-	return "./patterns/" + fileNameXlsxExtension
 }
 
-func generatePatternSheet(img image.Image, patternFile *excelize.File, width, height int) map[string]int {
+func generatePatternSheet(img image.Image, patternFile *excelize.File, cellStyle int, width, height int) map[string]int {
 	colorNumber := 1
 
 	colorMap := make(map[string]int)
@@ -106,9 +109,11 @@ func generatePatternSheet(img image.Image, patternFile *excelize.File, width, he
 	return colorMap
 }
 
-func generateColorListSheet(colorMap map[string]int, patternFile *excelize.File) {
+func generateColorListSheet(colorMap map[string]int, patternFile *excelize.File, cellStyle int) {
 	for clr, nmb := range colorMap {
 		patternFile.SetCellValue("List", "A"+strconv.Itoa(nmb), nmb)
+		patternFile.SetCellStyle("List", "A"+strconv.Itoa(nmb), "A"+strconv.Itoa(nmb), cellStyle)
 		patternFile.SetCellValue("List", "B"+strconv.Itoa(nmb), clr)
+		patternFile.SetCellStyle("List", "B"+strconv.Itoa(nmb), "B"+strconv.Itoa(nmb), cellStyle)
 	}
 }

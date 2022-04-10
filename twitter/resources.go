@@ -31,3 +31,12 @@ type Tweet struct {
 	MediaUrl         string
 	Error            bool
 }
+
+type ReplyId struct {
+	InReplyToStatusId string `json:"in_reply_to_status_id"`
+}
+
+type ReplyTweet struct {
+	Text string `json:"text"`
+	ReplyId
+}

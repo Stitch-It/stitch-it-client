@@ -66,6 +66,7 @@ func main() {
 					gen.GenerateExcelPattern(fileName, twt.AuthorScreenName)
 					//------------------------------
 
+					twitter.ReplyUrl(client, twt, fileName)
 					// Here is where the reply to the user
 					// with the URL for downloading their
 					// pattern will go
