@@ -12,7 +12,11 @@ import (
 )
 
 func main() {
-	// Parse env variables for Twitter Bearer Token
+
+	// Lines 19 through 48 are relevant to this software only in its Twitter bot iteration
+	// It can largely be ignored for the purpose of refactoring to use the Fyne framework
+
+	// Parse env variables for Twitter credentials
 	cfg := &twitter.Config{}
 	if err := env.Parse(cfg); err != nil {
 		fmt.Printf("%v\n", err)
@@ -44,19 +48,20 @@ func main() {
 	}
 
 	// Run separate server in goroutine so users can
-	// make requests and we can consume the Twitter
+	// make requests (responding to tweets) and we can consume the Twitter
 	// API at the same time
-	// go func() {
-	// 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	// 		println("hello")
-	// 	})
+	//go func() {
+	//	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	//		println("hello")
+	//	})
+	//
+	//	log.Fatal(http.ListenAndServe(":3030", nil))
+	//}()
 
-	// 	log.Fatal(http.ListenAndServe(":3030", nil))
-	// }()
-
+	// Here is where the stream for listing for individual tweets is started
 	twitter.StartStream(client)
 
-	// Listen on client.imgTweet channel
+	// Listen on client.ImageTweet channel
 	// for a Tweet to process
 	for imgTweet := range client.ImageTweet {
 		done := make(chan bool)
@@ -68,31 +73,16 @@ func main() {
 				default:
 					imgUrl := twt.MediaUrl
 					imgSize := twt.Text
-					//tweetId := imgTweet.Id
 
+					// This is where the main functionality that will be ported over to using the Fyne framework will be
 					fileName, b, _ := imgHdl.DownloadImage(imgUrl)
 
 					imgHdl.ResizeImage(fileName, b, imgSize)
 
 					gen.GenerateExcelPattern(fileName, twt.AuthorScreenName)
-					//------------------------------
 
 					twitter.ReplyUrl(client, twt, fileName)
-					// Here is where the reply to the user
-					// with the URL for downloading their
-					// pattern will go
 
-					// This was just proof of concept that
-					// this method works for downloading
-					// images and them being able to be deleted
-					// as well so that I can age and delete them
-					// later
-					// time.Sleep(15 * time.Second)
-
-					// err := os.Remove("./images/" + fileName)
-					// if err != nil {
-					// 	fmt.Printf("%v\n", err)
-					// }
 					done <- true
 				}
 			}

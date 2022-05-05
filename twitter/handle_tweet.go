@@ -1,8 +1,6 @@
 package twitter
 
-func handleTweet(bytes []byte, client Client) bool {
-	var done bool = false
-
+func handleTweet(bytes []byte, client Client) {
 	// This check handles sporadic empty messages
 	if len(bytes) >= 0 {
 		tweet := Tweet{
@@ -23,10 +21,6 @@ func handleTweet(bytes []byte, client Client) bool {
 			// }
 
 			// client.imageTweet <- nextTweet
-
-			done = true
 		}
 	}
-
-	return done
 }
