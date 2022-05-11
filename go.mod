@@ -3,7 +3,6 @@ module github.com/Stitch-It/stitch-it
 go 1.16
 
 require (
-	github.com/google/uuid v1.3.0
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/rs/zerolog v1.26.1 // indirect
 	github.com/syke99/go-c2dmc v1.0.13
