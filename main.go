@@ -1,92 +1,28 @@
+//go:build wasm
+// +build wasm
+
 package main
 
 import (
-	"fmt"
-	"net/http"
-
 	gen "github.com/Stitch-It/stitch-it/generate-pattern"
 	imgHdl "github.com/Stitch-It/stitch-it/image-process"
-	"github.com/Stitch-It/stitch-it/twitter"
-	"github.com/caarlos0/env/v6"
-	"github.com/dghubble/oauth1"
+	"syscall/js"
 )
 
 func main() {
+	done := make(chan struct{}, 0)
+	js.Global().Set("processAndCreatePattern", js.FuncOf(processAndCreatePattern))
+	<-done
+}
 
-	// Lines 19 through 48 are relevant to this software only in its Twitter bot iteration
-	// It can largely be ignored for the purpose of refactoring to use the Fyne framework
+// May need to change into expecting a bas64 encoded string
+// not sure because syscall/js doesn't provide a type cast to
+// a []byte, but does provide a type case to String
+func processAndCreatePattern(this js.Value, args []js.Value) interface{} {
 
-	// Parse env variables for Twitter credentials
-	cfg := &twitter.Config{}
-	if err := env.Parse(cfg); err != nil {
-		fmt.Printf("%v\n", err)
-	}
+	resImg := imgHdl.ResizeImage(args[0], args[1].Bool(), args[3].Int(), args[4].Int())
 
-	// Create a new httpClient that will use
-	// the Bearer Token to authorize into
-	// endpoint for listening to Tweet stream
-	httpClient := &http.Client{}
+	buf := gen.GenerateExcelPattern(resImg)
 
-	// Create oauthClient for authorization into
-	// endpoint for replying to tweets
-	config := oauth1.NewConfig(cfg.ConsumerKey, cfg.ConsumerSecret)
-	token := oauth1.NewToken(cfg.AccessToken, cfg.AccessSecret)
-
-	oauthClient := config.Client(oauth1.NoContext, token)
-
-	// tweet is a channel for the stream to send
-	// individual Tweets on for processing, pattern
-	// generation, and Tweet response in separate
-	// goroutines for each tweet
-	tweet := make(chan twitter.Tweet)
-
-	client := twitter.Client{
-		Conf:       cfg,
-		Http:       httpClient,
-		Oauth:      oauthClient,
-		ImageTweet: tweet,
-	}
-
-	// Run separate server in goroutine so users can
-	// make requests (responding to tweets) and we can consume the Twitter
-	// API at the same time
-	//go func() {
-	//	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	//		println("hello")
-	//	})
-	//
-	//	log.Fatal(http.ListenAndServe(":3030", nil))
-	//}()
-
-	// Here is where the stream for listing for individual tweets is started
-	twitter.StartStream(client)
-
-	// Listen on client.ImageTweet channel
-	// for a Tweet to process
-	for imgTweet := range client.ImageTweet {
-		done := make(chan bool)
-		go func(twt twitter.Tweet) {
-			for {
-				select {
-				case <-done:
-					return
-				default:
-					imgUrl := twt.MediaUrl
-					imgSize := twt.Text
-
-					// This is where the main functionality that will be ported over to using the Fyne framework will be
-					fileName, b, _ := imgHdl.DownloadImage(imgUrl)
-
-					imgHdl.ResizeImage(fileName, b, imgSize)
-
-					gen.GenerateExcelPattern(fileName, twt.AuthorScreenName)
-
-					twitter.ReplyUrl(client, twt, fileName)
-
-					done <- true
-				}
-			}
-
-		}(imgTweet)
-	}
+	return buf
 }

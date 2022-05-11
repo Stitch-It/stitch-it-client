@@ -1,54 +1,16 @@
 package gen
 
 import (
+	"bytes"
 	"fmt"
-	"image"
-	"os"
-	"strconv"
-	"strings"
-
 	dmc "github.com/syke99/go-c2dmc"
 	"github.com/xuri/excelize/v2"
+	"image"
+	"strconv"
 )
 
-func GenerateExcelPattern(fileName, authorScreenName string) {
-
-	// check to see if the patterns directory is there for saving patterns to
-	// and create it if it isn't
-	if _, err := os.Stat("./patterns/"); os.IsNotExist(err) {
-		err = os.Mkdir("patterns", 0755)
-		if err != nil {
-			fmt.Printf("err: %v\n", err)
-		}
-	}
-
-	// grab the resized image
-	imgFile, err := os.Open("./images/" + fileName)
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
-
-	// decode it into an image.Image (can think of it as a wrapper around the bitmap (2D byte array) of the raster
-	// image that provides functionality to retrieve the RGBA value from each byte)
-	img, _, err := image.Decode(imgFile)
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
-
-	// close the image as we no longer need it open
-	err = imgFile.Close()
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
-
-	// change to the patterns directory to save the pattern to
-	err = os.Chdir("./patterns")
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
-
-	// retrieve the filename minus the extension so we can later change it, but have a consistent filename
-	fileNameXlsxExtension := strings.Split(fileName, ".")[0]
+func GenerateExcelPattern(img *image.RGBA) interface{} {
+	var buf bytes.Buffer
 
 	// represent the width and height of the image.Image cleaner
 	width := img.Bounds().Max.X
@@ -65,26 +27,18 @@ func GenerateExcelPattern(fileName, authorScreenName string) {
 	patternSheet := patternFile.NewSheet("Pattern")
 	println(patternSheet)
 
-	// this hasn't been completed yet. For some reason, it isn't setting the style. But wasn't important, so did not complete yet.
-	cellStyle, err := patternFile.NewStyle(`"border":[{"type":"left","color":"000000","style":2},{"type":"top","color":"000000","style":2},{"type":"bottom","color":"000000","style":2},{"type":"right","color":"000000","style":2}]`)
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
-
 	// generate the pattern and grab the list of numbers and corresponding thread color names to create the color List
-	colorMap := generatePatternSheet(img, patternFile, cellStyle, width, height)
+	colorMap := generatePatternSheet(img, patternFile, width, height)
 
 	// generate the Color List from the colorMap
-	generateColorListSheet(colorMap, patternFile, cellStyle)
+	generateColorListSheet(colorMap, patternFile)
 
-	// save the workbook
-	err = patternFile.SaveAs(fileNameXlsxExtension + "@" + authorScreenName + ".xlsx")
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-	}
+	patternFile.Write(&buf)
+
+	return buf
 }
 
-func generatePatternSheet(img image.Image, patternFile *excelize.File, cellStyle int, width, height int) map[string]int {
+func generatePatternSheet(img image.Image, patternFile *excelize.File, width, height int) map[string]int {
 	// cross stitch patterns rarely have 0s, so make sure the first color is set to be represented by 1
 	colorNumber := 1
 
@@ -144,11 +98,9 @@ func generatePatternSheet(img image.Image, patternFile *excelize.File, cellStyle
 }
 
 // loops through the colorMap and adds a new entry for each number/corresponding thread color
-func generateColorListSheet(colorMap map[string]int, patternFile *excelize.File, cellStyle int) {
+func generateColorListSheet(colorMap map[string]int, patternFile *excelize.File) {
 	for clr, nmb := range colorMap {
 		patternFile.SetCellValue("List", "A"+strconv.Itoa(nmb), nmb)
-		patternFile.SetCellStyle("List", "A"+strconv.Itoa(nmb), "A"+strconv.Itoa(nmb), cellStyle)
 		patternFile.SetCellValue("List", "B"+strconv.Itoa(nmb), clr)
-		patternFile.SetCellStyle("List", "B"+strconv.Itoa(nmb), "B"+strconv.Itoa(nmb), cellStyle)
 	}
 }
