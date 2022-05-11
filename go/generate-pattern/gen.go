@@ -2,6 +2,7 @@ package gen
 
 import (
 	"bytes"
+	b64 "encoding/base64"
 	"fmt"
 	dmc "github.com/syke99/go-c2dmc"
 	"github.com/xuri/excelize/v2"
@@ -9,14 +10,14 @@ import (
 	"strconv"
 )
 
-func GenerateExcelPattern(img *image.RGBA) interface{} {
+func GenerateExcelPattern(img *image.RGBA) string {
 	var buf bytes.Buffer
 
 	// represent the width and height of the image.Image cleaner
 	width := img.Bounds().Max.X
 	height := img.Bounds().Max.Y
 
-	// create a new excel workbook
+	// create a new Excel workbook
 	patternFile := excelize.NewFile()
 
 	defer patternFile.Close()
@@ -35,7 +36,9 @@ func GenerateExcelPattern(img *image.RGBA) interface{} {
 
 	patternFile.Write(&buf)
 
-	return buf
+	encodedFileString := b64.StdEncoding.EncodeToString(buf.Bytes())
+
+	return encodedFileString
 }
 
 func generatePatternSheet(img image.Image, patternFile *excelize.File, width, height int) map[string]int {
@@ -61,14 +64,14 @@ func generatePatternSheet(img image.Image, patternFile *excelize.File, width, he
 			g := float64(g_ / 255)
 			b := float64(b_ / 255)
 
-			// initalize a bank of thread colors to test each pixel's color against
+			// initialize a bank of thread colors to test each pixel's color against
 			// using the syke99/go-c2dmc package
 			colorBank := dmc.NewColorBank()
 
 			// calculate the closest matching thread color to the pixel's RGB values
 			color, _ := colorBank.RgbToDmc(r, g, b)
 
-			// create a cell in the excel sheet (since the bounds of an image.Image start at
+			// create a cell in the Excel sheet (since the bounds of an image.Image start at
 			// 0 and 0 (width and height, respectfully), we need to increment each pixel's number
 			// by one so that excelize knows where to create a cell (otherwise, you cut off one row
 			// and one column of pixels)

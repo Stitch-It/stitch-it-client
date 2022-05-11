@@ -19,7 +19,6 @@ func main() {
 // not sure because syscall/js doesn't provide a type cast to
 // a []byte, but does provide a type case to String
 func processAndCreatePattern(this js.Value, args []js.Value) interface{} {
-
 	resImg := imgHdl.ResizeImage(args[0], args[1].Bool(), args[3].Int(), args[4].Int())
 
 	buf := gen.GenerateExcelPattern(resImg)

@@ -2,12 +2,19 @@ package imgProc
 
 import (
 	"bytes"
+	b64 "encoding/base64"
 	"fmt"
 	"golang.org/x/image/draw"
 	"image"
 )
 
-func ResizeImage(b interface{}, metric bool, width int, height int) *image.RGBA {
+func ResizeImage(b string, metric bool, width int, height int) *image.RGBA {
+	// b is a base64 encoded string representing
+	// a []byte containing the image, so we must
+	// decode it
+
+	imgBts, _ := b64.StdEncoding.DecodeString(b)
+
 	var w int
 	var h int
 
@@ -24,7 +31,7 @@ func ResizeImage(b interface{}, metric bool, width int, height int) *image.RGBA 
 	}
 
 	// decode the bytes of the image
-	src, _, err := image.Decode(bytes.NewReader(b.([]byte)))
+	src, _, err := image.Decode(bytes.NewReader(imgBts))
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
