@@ -1,6 +1,6 @@
 Instructions to come!
 
-### Note for cross compiling to WASM on Windows ###
+### Note for cross compiling to WASM on Windows in local development environment ###
 
 On Windows, to cross compile to WASM, instead of simply running
 
