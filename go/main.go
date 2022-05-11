@@ -4,8 +4,8 @@
 package main
 
 import (
-	gen "github.com/Stitch-It/stitch-it/generate-pattern"
-	imgHdl "github.com/Stitch-It/stitch-it/image-process"
+	gen "github.com/Stitch-It/stitch-it/go/generate-pattern"
+	imgHdl "github.com/Stitch-It/stitch-it/go/image-process"
 	"syscall/js"
 )
 
