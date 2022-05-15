@@ -41,12 +41,17 @@ func GenerateExcelPattern(img *image.RGBA) string {
 	return encodedFileString
 }
 
-func generatePatternSheet(img image.Image, patternFile *excelize.File, width, height int) map[string]int {
+type threadInfo struct {
+	colorNumber int
+	colorFloss  string
+}
+
+func generatePatternSheet(img image.Image, patternFile *excelize.File, width, height int) map[string]threadInfo {
 	// cross stitch patterns rarely have 0s, so make sure the first color is set to be represented by 1
 	colorNumber := 1
 
 	// initialize a colorMap to hold the list of numbers and corresponding thread color names
-	colorMap := make(map[string]int)
+	colorMap := make(map[string]threadInfo)
 
 	// loop through the image.Image
 	for y := 0; y < height; y++ {
@@ -69,7 +74,7 @@ func generatePatternSheet(img image.Image, patternFile *excelize.File, width, he
 			colorBank := dmc.NewColorBank()
 
 			// calculate the closest matching thread color to the pixel's RGB values
-			color, _ := colorBank.RgbToDmc(r, g, b)
+			color, floss := colorBank.RgbToDmc(r, g, b)
 
 			// create a cell in the Excel sheet (since the bounds of an image.Image start at
 			// 0 and 0 (width and height, respectfully), we need to increment each pixel's number
@@ -83,11 +88,19 @@ func generatePatternSheet(img image.Image, patternFile *excelize.File, width, he
 			// generate the colorMap based on if it's the first color to be found,
 			// or whether the color already exists in the color map
 			if cellName == "A1" {
-				colorMap[color] = 1
+				initialColor := threadInfo{
+					colorNumber: 1,
+					colorFloss:  floss,
+				}
+				colorMap[color] = initialColor
 			} else {
 				if _, ok := colorMap[color]; !ok {
+					nextColor := threadInfo{
+						colorNumber: colorNumber,
+						colorFloss:  floss,
+					}
 					colorNumber++
-					colorMap[color] = colorNumber
+					colorMap[color] = nextColor
 				}
 			}
 
@@ -101,9 +114,10 @@ func generatePatternSheet(img image.Image, patternFile *excelize.File, width, he
 }
 
 // loops through the colorMap and adds a new entry for each number/corresponding thread color
-func generateColorListSheet(colorMap map[string]int, patternFile *excelize.File) {
-	for clr, nmb := range colorMap {
-		patternFile.SetCellValue("List", "A"+strconv.Itoa(nmb), nmb)
-		patternFile.SetCellValue("List", "B"+strconv.Itoa(nmb), clr)
+func generateColorListSheet(colorMap map[string]threadInfo, patternFile *excelize.File) {
+	for color, info := range colorMap {
+		patternFile.SetCellValue("List", "A"+strconv.Itoa(info.colorNumber), info.colorNumber)
+		patternFile.SetCellValue("List", "B"+strconv.Itoa(info.colorNumber), color)
+		patternFile.SetCellValue("List", "C"+strconv.Itoa(info.colorNumber), info.colorFloss)
 	}
 }
