@@ -4,9 +4,10 @@
 package main
 
 import (
+	"syscall/js"
+
 	gen "github.com/Stitch-It/stitch-it/go/generate-pattern"
 	imgHdl "github.com/Stitch-It/stitch-it/go/image-process"
-	"syscall/js"
 )
 
 func main() {

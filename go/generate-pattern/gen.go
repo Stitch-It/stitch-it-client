@@ -4,10 +4,11 @@ import (
 	"bytes"
 	b64 "encoding/base64"
 	"fmt"
-	dmc "github.com/syke99/go-c2dmc"
-	"github.com/xuri/excelize/v2"
 	"image"
 	"strconv"
+
+	dmc "github.com/syke99/go-c2dmc"
+	"github.com/xuri/excelize/v2"
 )
 
 func GenerateExcelPattern(img *image.RGBA) string {

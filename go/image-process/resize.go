@@ -4,8 +4,9 @@ import (
 	"bytes"
 	b64 "encoding/base64"
 	"fmt"
-	"golang.org/x/image/draw"
 	"image"
+
+	"golang.org/x/image/draw"
 )
 
 func ResizeImage(b string, metric bool, width int, height int) *image.RGBA {
