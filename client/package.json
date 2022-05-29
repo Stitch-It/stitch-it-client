@@ -1,5 +1,5 @@
 {
-  "name": "si-frontend",
+  "name": "client",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
