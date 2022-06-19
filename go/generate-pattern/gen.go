@@ -95,11 +95,11 @@ func generatePatternSheet(img image.Image, patternFile *excelize.File, width, he
 				colorMap[color] = initialColor
 			} else {
 				if _, ok := colorMap[color]; !ok {
+					colorNumber++
 					nextColor := threadInfo{
 						colorNumber: colorNumber,
 						colorFloss:  floss,
 					}
-					colorNumber++
 					colorMap[color] = nextColor
 				}
 			}
