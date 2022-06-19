@@ -53,6 +53,10 @@ func generatePatternSheet(img image.Image, patternFile *excelize.File, width, he
 	// initialize a colorMap to hold the list of numbers and corresponding thread color names
 	colorMap := make(map[string]threadInfo)
 
+	// initialize a bank of thread colors to test each pixel's color against
+	// using the syke99/go-c2dmc package
+	colorBank := dmc.NewColorBank()
+	
 	// loop through the image.Image
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
@@ -68,10 +72,6 @@ func generatePatternSheet(img image.Image, patternFile *excelize.File, width, he
 			r := float64(r_ / 255)
 			g := float64(g_ / 255)
 			b := float64(b_ / 255)
-
-			// initialize a bank of thread colors to test each pixel's color against
-			// using the syke99/go-c2dmc package
-			colorBank := dmc.NewColorBank()
 
 			// calculate the closest matching thread color to the pixel's RGB values
 			color, floss := colorBank.RgbToDmc(r, g, b)
